@@ -1,0 +1,50 @@
+name: Generate Blog Posts
+
+on:
+  schedule:
+    - cron: '0 8 * * *'  # Runs at 8 AM UTC every day
+  workflow_dispatch:      # Allows manual triggering
+
+jobs:
+  generate_posts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install openai requests beautifulsoup4 html2text pillow paramiko
+          
+      - name: Generate and upload blog posts
+        env:
+          ECOMAGENT_API_KEY: ${{ secrets.ECOMAGENT_API_KEY }}
+          ECOMAGENT_BASE_URL: ${{ vars.ECOMAGENT_BASE_URL }}
+          ECOMAGENT_MODEL: ${{ vars.ECOMAGENT_MODEL }}
+          ECOMAGENT_TOPIC_MODEL: ${{ vars.ECOMAGENT_TOPIC_MODEL }}
+
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_BASE_URL: ${{ vars.OPENAI_BASE_URL }}
+          OPENAI_IMAGE_MODEL: ${{ vars.OPENAI_IMAGE_MODEL || 'gpt-image-1' }}
+          OPENAI_IMAGE_SIZE: ${{ vars.OPENAI_IMAGE_SIZE || '1024x1024' }}
+          REQUIRE_IMAGE_GENERATION: ${{ vars.REQUIRE_IMAGE_GENERATION || 'true' }}
+
+          SITE_BASE_URL: ${{ vars.SITE_BASE_URL || 'https://protrucklogistics.org' }}
+          POSTS_TO_GENERATE: ${{ vars.POSTS_TO_GENERATE }}
+          BLOG_TEMPLATE_PATH: ${{ vars.BLOG_TEMPLATE_PATH }}
+          BLOG_INCLUDES_HREF: ${{ vars.BLOG_INCLUDES_HREF || '../includes.html' }}
+          SKIP_UPLOAD: ${{ vars.SKIP_UPLOAD }}
+
+          FTP_HOST: ${{ secrets.FTP_HOST }}
+          FTP_USER: ${{ secrets.FTP_USER }}
+          FTP_PASS: ${{ secrets.FTP_PASS }}
+          FTP_IS_SFTP: ${{ vars.FTP_IS_SFTP || 'true' }}
+          FTP_BLOG_DIR: ${{ vars.FTP_BLOG_DIR || '/blog-posts/' }}
+          SFTP_STRICT_HOST_KEY: ${{ vars.SFTP_STRICT_HOST_KEY }}
+          SFTP_KNOWN_HOSTS: ${{ vars.SFTP_KNOWN_HOSTS }}
+        run: python generate_blogs.py
