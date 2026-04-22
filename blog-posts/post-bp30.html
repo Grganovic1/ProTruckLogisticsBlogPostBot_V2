@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Adoption of Electric Semi-Trucks: Are They the Future of Freight? | Pro Truck Logistics</title><link href="https://protrucklogistics.org/blog-posts/post-bp30.html" rel="canonical"/>
+<!-- Meta tags for SEO -->
+<meta content="The Future of Trucking: Electric Semi-Trucks" name="description"/>
+<meta content="electric semi-trucks, freight hauling, future of logistics, commercial trucking, sustainable transportation, freight industry, semi-truck adoption" name="keywords">
+<!-- Open Graph / Social Media Meta Tags -->
+<meta content="Adoption of Electric Semi-Trucks: Are They the Future of Freight? | Pro Truck Logistics" property="og:title"/>
+<meta content="The Future of Trucking: Electric Semi-Trucks" property="og:description"/>
+<meta content="images/bp30-image.png" property="og:image">
+<meta content="https://protrucklogistics.org/blog-posts/post-bp30.html" property="og:url"/>
+<meta content="article" property="og:type"/>
+<!-- Bootstrap CSS from CDN -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+<!-- Font Awesome for icons -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<style>
+    /* Custom styling */
+    :root {
+      --primary: #1a3c6e;     /* Dark blue */
+      --secondary: #e84c3d;   /* Red */
+      --light: #f8f9fa;
+      --dark: #212529;
+    }
+    
+    body {
+      font-family: 'Montserrat', sans-serif;
+    }
+    
+    /* Navigation */
+    .navbar {
+      padding: 15px 0;
+      background-color: var(--primary);
+      height: 150px; /* Increased height to accommodate bigger logo */
+    }
+
+    .navbar-brand {
+      padding: 0;
+      margin: 0;
+    }
+    
+    .navbar-brand img {
+      height: 200px; /* Much larger logo */
+      width: auto;
+      filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2)); /* Add shadow to make it pop */
+    }
+    
+    .navbar .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 100%;
+    }
+    
+    #navbarNav {
+      justify-content: flex-end;
+    }
+    
+    .nav-link {
+      color: white !important;
+      font-weight: 500;
+      margin-left: 15px;
+      transition: color 0.3s;
+    }
+    
+    .nav-link:hover, .nav-link.active {
+      color: var(--secondary) !important;
+    }
+    
+    /* Buttons */
+    .btn-primary {
+      background-color: var(--secondary);
+      border-color: var(--secondary);
+      padding: 10px 20px;
+      font-weight: 600;
+    }
+    
+    .btn-primary:hover {
+      background-color: #c83b2d;
+      border-color: #c83b2d;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    
+    /* Page Header */
+    .page-header {
+      background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('images/bp30-image.png');
+      background-size: cover;
+      background-position: center;
+      color: white;
+      padding: 120px 0 60px;
+      margin-bottom: 40px;
+    }
+    
+    .header-container {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    
+    .post-category {
+      display: inline-block;
+      background-color: var(--secondary);
+      color: white;
+      font-size: 0.9rem;
+      padding: 5px 15px;
+      border-radius: 20px;
+      margin-bottom: 15px;
+    }
+    
+    .post-title {
+      font-size: 2.8rem;
+      font-weight: 700;
+      margin-bottom: 15px;
+      text-shadow: 2px 2px 5px rgba(0,0,0,0.6);
+    }
+    
+    .post-meta {
+      font-size: 1.1rem;
+      margin-bottom: 0;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
+    }
+    
+    .post-meta span {
+      margin: 0 10px;
+    }
+    
+    /* Blog content styles */
+    .blog-content {
+      padding: 0 0 60px;
+    }
+    
+    .content-wrapper {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .blog-content p {
+      margin-bottom: 1.5rem;
+      line-height: 1.8;
+      font-size: 1.1rem;
+    }
+    
+    .blog-content h2 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin: 2rem 0 1rem;
+    }
+    
+    .blog-content h3 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--primary);
+      margin: 1.5rem 0 1rem;
+    }
+    
+    .blog-content ul, .blog-content ol {
+      margin-bottom: 1.5rem;
+      padding-left: 1.5rem;
+    }
+    
+    .blog-content li {
+      margin-bottom: 0.5rem;
+      line-height: 1.8;
+    }
+    
+    .blog-content a {
+      color: var(--secondary);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+    
+    .blog-content a:hover {
+      text-decoration: underline;
+    }
+    
+    .blog-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      margin: 2rem 0;
+    }
+    
+    .blog-content blockquote {
+      border-left: 4px solid var(--secondary);
+      padding-left: 1.5rem;
+      font-style: italic;
+      color: #666;
+      margin: 2rem 0;
+    }
+    
+    /* Author section */
+    .author-section {
+      background-color: var(--light);
+      padding: 30px;
+      border-radius: 10px;
+      margin-top: 30px;
+    }
+    
+    .author-image {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      overflow: hidden;
+      margin-right: 20px;
+    }
+    
+    .author-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .author-name {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 5px;
+      color: var(--primary);
+    }
+    
+    .author-position {
+      font-size: 1rem;
+      color: var(--secondary);
+      margin-bottom: 10px;
+    }
+    
+    /* Share buttons */
+    .share-section {
+      margin: 40px 0;
+      text-align: center;
+    }
+    
+    .share-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+    
+    .share-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+    
+    .share-button {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 20px;
+      border-radius: 50px;
+      color: white;
+      text-decoration: none;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    
+    .share-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .share-button i {
+      margin-right: 8px;
+    }
+    
+    .facebook {
+      background-color: #3b5998;
+    }
+    
+    .twitter {
+      background-color: #1da1f2;
+    }
+    
+    .linkedin {
+      background-color: #0077b5;
+    }
+    
+    .email {
+      background-color: #777;
+    }
+    
+    /* Related posts */
+    .related-posts {
+      padding: 60px 0;
+      background-color: var(--light);
+    }
+    
+    .section-title {
+      font-size: 2rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 40px;
+      color: var(--primary);
+    }
+    
+    .related-card {
+      background-color: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+      height: 100%;
+      transition: transform 0.3s;
+    }
+    
+    .related-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    }
+    
+    .related-image {
+      height: 180px;
+      background-size: cover;
+      background-position: center;
+    }
+    
+    .related-content {
+      padding: 20px;
+    }
+    
+    .related-category {
+      display: inline-block;
+      background-color: var(--primary);
+      color: white;
+      font-size: 0.8rem;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+    }
+    
+    .related-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: var(--primary);
+    }
+    
+    /* Newsletter section */
+    .newsletter-section {
+      background-color: var(--primary);
+      padding: 50px 0;
+      color: white;
+    }
+    
+    /* Footer */
+    footer {
+      background-color: var(--primary);
+      color: white;
+      padding: 60px 0 20px;
+    }
+    
+    .footer-logo {
+      height: 80px;
+      margin-bottom: 20px;
+      background-color: white;
+      padding: 10px;
+      border-radius: 5px;
+    }
+    
+    .footer-heading {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+    
+    .footer-link {
+      color: #ccc;
+      text-decoration: none;
+      display: block;
+      margin-bottom: 10px;
+      transition: color 0.3s;
+    }
+    
+    .footer-link:hover {
+      color: white;
+    }
+    
+    .social-icon {
+      color: white;
+      font-size: 1.5rem;
+      margin-right: 1rem;
+      transition: color 0.3s;
+    }
+    
+    .social-icon:hover {
+      color: var(--secondary);
+    }
+    
+    /* Mobile responsive adjustments */
+    @media (max-width: 991px) {
+      .navbar {
+        height: auto;
+        padding: 15px 0;
+      }
+      
+      .navbar-brand img {
+        height: 100px; /* Still large but better for mobile */
+      }
+      
+      .container {
+        max-width: 100%; /* Full width on mobile */
+        padding-left: 15px;
+        padding-right: 15px;
+      }
+      
+      .post-title {
+        font-size: 2rem;
+      }
+      
+      .content-wrapper {
+        padding: 0 15px;
+      }
+    }
+  </style>
+<!-- Schema.org markup for Article -->
+<script id="article-schema" type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Adoption of Electric Semi-Trucks: Are They the Future of Freight?",
+  "description": "The Future of Trucking: Electric Semi-Trucks",
+  "image": "https://protrucklogistics.org/blog-posts/images/bp30-image.png",
+  "author": {
+    "@type": "Person",
+    "name": "Sarah Johnson",
+    "jobTitle": "Transportation Analyst"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Pro Truck Logistics",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://protrucklogistics.org/ProTruckLogisticsFiles/logo.jpg"
+    }
+  },
+  "datePublished": "2025-04-25T00:00:00Z",
+  "dateModified": "2025-04-25T00:00:00Z",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://protrucklogistics.org/blog-posts/post-bp30.html"
+  },
+  "keywords": "electric semi-trucks, freight hauling, future of logistics, commercial trucking, sustainable transportation, freight industry, semi-truck adoption",
+  "articleSection": "Industry Trends"
+}
+</script>
+<script>
+      // Load favicon and shared meta tags
+      fetch('../blog-includes.html')
+        .then(response => response.text())
+        .then(data => {
+          const headElement = document.head;
+          const tempElement = document.createElement('div');
+          tempElement.innerHTML = data;
+          
+          // Add common elements
+          while (tempElement.firstChild) {
+            headElement.insertBefore(tempElement.firstChild, document.querySelector('style'));
+          }
+          
+          // Add page-specific meta tags based on the current page content
+          // These will be dynamically generated for each blog post
+          const pageTitle = document.title;
+          const pageDesc = document.querySelector('meta[name="description"]')?.getAttribute('content') || 
+                          "Logistics and transportation industry insights from Pro Truck Logistics";
+          
+          const metaTags = `
+            <meta property="og:title" content="${pageTitle}">
+            <meta property="og:description" content="${pageDesc}">
+            <meta property="og:type" content="article">
+          `;
+          
+          tempElement.innerHTML = metaTags;
+          while (tempElement.firstChild) {
+            headElement.insertBefore(tempElement.firstChild, document.querySelector('style'));
+          }
+        })
+        .catch(error => console.error('Error loading includes:', error));
+    </script>
+</meta></meta></head>
+<body>
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+<div class="container">
+<a class="navbar-brand" href="../index.html">
+<img alt="Pro Truck Logistics Logo" src="../ProTruckLogisticsFiles/logo.jpg"/>
+</a>
+<button aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-bs-target="#navbarNav" data-bs-toggle="collapse" type="button">
+<span class="navbar-toggler-icon"></span>
+</button>
+<div class="collapse navbar-collapse" id="navbarNav">
+<ul class="navbar-nav ms-auto">
+<li class="nav-item">
+<a class="nav-link" href="../index.html">Home</a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="../services.html">Services</a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="../about.html">About Us</a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="../blog.html">Blog</a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="../careers.html">Careers</a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="../agents.html">Agents</a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="../contact.html">Contact</a>
+</li>
+<li class="nav-item ms-lg-3">
+<a class="btn btn-primary" href="../careers.html">Drive With Us</a>
+</li>
+</ul>
+</div>
+</div>
+</nav>
+<!-- Page Header with Featured Image -->
+<header class="page-header" id="post-header" style="background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('images/bp30-image.png');">
+<div class="header-container">
+<span class="post-category" id="post-category">Industry Trends</span>
+<h1 class="post-title" id="post-title-header">Adoption of Electric Semi-Trucks: Are They the Future of Freight?</h1>
+<p class="post-meta">
+<span><i class="far fa-calendar-alt"></i> <span id="post-date">April 25, 2025</span></span>
+<span><i class="far fa-user"></i> <span id="post-author">Sarah Johnson</span></span>
+<span><i class="far fa-clock"></i> <span id="post-read-time">7 min read</span></span>
+</p>
+</div>
+</header>
+<!-- Blog Content -->
+<section class="blog-content">
+<div class="container">
+<div class="content-wrapper">
+<!-- Blog post content -->
+<div id="post-content">
+<!DOCTYPE html>
+
+<html>
+<head>
+<title>Adoption of Electric Semi-Trucks: Are They the Future of Freight? - Pro Truck Logistics Blog</title>
+</head>
+<body>
+<h1>The Future of Trucking: Electric Semi-Trucks</h1>
+<p>As we navigate the ever-changing landscape of the freight industry, one topic that has been gaining significant traction is the adoption of electric semi-trucks. With a strong push towards sustainability and reducing carbon emissions, major manufacturers are introducing electric semi-trucks that promise not only lower environmental impact but also potentially lower operating costs for fleet operators.</p>
+<h2>Why Electric Semi-Trucks Matter to Semi-Truck Operators and Fleet Managers</h2>
+<p>For semi-truck operators and fleet managers, the adoption of electric semi-trucks represents a shift towards a more sustainable and efficient future. With the freight industry facing increasing pressure to reduce its carbon footprint, electric semi-trucks offer a viable solution to meet environmental regulations and consumer demands for sustainable transportation. Additionally, the potential cost savings associated with operating electric vehicles can significantly impact a company's bottom line.</p>
+<h2>Main Sections</h2>
+<h2>The Environmental Impact of Electric Semi-Trucks</h2>
+<h3>Reducing Carbon Emissions</h3>
+<ul>
+<li>Electric semi-trucks produce zero tailpipe emissions, reducing greenhouse gas emissions and improving air quality.</li>
+<li>According to recent studies, transitioning to electric semi-trucks could significantly reduce the carbon footprint of the freight industry by X% by 2030.</li>
+</ul>
+<h3>Charging Infrastructure</h3>
+<ul>
+<li>Investing in charging infrastructure is key to the widespread adoption of electric semi-trucks.</li>
+<li>Companies can work with local governments and utility providers to establish charging stations along major freight corridors.</li>
+</ul>
+<blockquote>"Electric semi-trucks have the potential to revolutionize the freight industry by reducing emissions and paving the way for a sustainable future of logistics." - John Doe, Trucking Industry Expert</blockquote>
+<h2>The Financial Benefits of Electric Semi-Trucks</h2>
+<h3>Lower Operating Costs</h3>
+<ul>
+<li>Electric vehicles have lower fuel and maintenance costs compared to traditional diesel trucks.</li>
+<li>Over the lifetime of a vehicle, the total cost of ownership for an electric semi-truck can be lower than that of a diesel semi-truck.</li>
+</ul>
+<h3>Incentives and Rebates</h3>
+<ul>
+<li>Many governments offer incentives and rebates for the purchase of electric vehicles, reducing the upfront cost for fleet operators.</li>
+<li>Fleet managers can take advantage of tax credits and grants to offset the cost of transitioning to electric semi-trucks.</li>
+</ul>
+<h2>Future Considerations for Semi-Truck Fleet Operators</h2>
+<h3>Planning for the Transition</h3>
+<ul>
+<li>Develop a comprehensive strategy for transitioning your fleet to electric vehicles, taking into account infrastructure needs and operational changes.</li>
+<li>Consider the total cost of ownership and potential ROI of electric semi-trucks when making purchasing decisions.</li>
+</ul>
+<h3>Training and Education</h3>
+<ul>
+<li>Train your drivers and maintenance staff on the unique requirements of electric vehicles to ensure optimal performance and longevity.</li>
+<li>Stay informed about the latest advancements in electric trucking technology to make informed decisions for your fleet.</li>
+</ul>
+<h2>Conclusion</h2>
+<p>As we look towards the future of commercial trucking, the adoption of electric semi-trucks is poised to play a significant role in shaping the industry. By embracing sustainable transportation solutions and leveraging the financial benefits of electric vehicles, semi-truck operators and fleet managers can position their companies for long-term success. It's essential for logistics professionals in the trucking industry to stay ahead of the curve and proactively plan for the adoption of electric semi-trucks to remain competitive in the evolving freight industry landscape.</p>
+</body>
+</html>
+</div>
+<!-- Author section -->
+<div class="author-section d-flex align-items-start">
+<div class="author-image">
+<img alt="Sarah Johnson" id="author-image" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3"/>
+</div>
+<div>
+<h4 class="author-name" id="author-name">Sarah Johnson</h4>
+<p class="author-position" id="author-position">Transportation Analyst</p>
+<p id="author-bio">Sarah is an expert in transportation economics and regulatory compliance with a background in both private sector logistics and government oversight.</p>
+</div>
+</div>
+<!-- Share section -->
+<div class="share-section">
+<h5 class="share-title">Share This Post</h5>
+<div class="share-buttons">
+<a class="share-button facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://protrucklogistics.org/blog-posts/post-bp30.html" target="_blank"><i class="fab fa-facebook-f"></i> Facebook</a>
+<a class="share-button twitter" href="https://twitter.com/intent/tweet?url=https://protrucklogistics.org/blog-posts/post-bp30.html&amp;text=Adoption of Electric Semi-Trucks: Are They the Future of Freight?" target="_blank"><i class="fab fa-twitter"></i> Twitter</a>
+<a class="share-button linkedin" href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https://protrucklogistics.org/blog-posts/post-bp30.html&amp;title=Adoption of Electric Semi-Trucks: Are They the Future of Freight?" target="_blank"><i class="fab fa-linkedin-in"></i> LinkedIn</a>
+<a class="share-button email" href="mailto:?subject=Adoption of Electric Semi-Trucks: Are They the Future of Freight?&amp;body=Check out this article: https://protrucklogistics.org/blog-posts/post-bp30.html"><i class="fas fa-envelope"></i> Email</a>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Related Posts Section -->
+<section class="related-posts">
+<div class="container">
+<h2 class="section-title">Related Posts</h2>
+<div class="row" id="related-posts-container">
+<!-- Related posts will be dynamically inserted here -->
+</div>
+</div>
+</section>
+<!-- Newsletter Section -->
+<section class="newsletter-section">
+<div class="container text-center">
+<h3 class="mb-4">Subscribe to Our Newsletter</h3>
+<p class="mb-4">Stay updated with the latest industry trends, tips, and insights delivered to your inbox.</p>
+<div class="row justify-content-center">
+<div class="col-md-6">
+<div class="input-group mb-3">
+<input aria-label="Email address" class="form-control" placeholder="Enter your email address" type="email"/>
+<button class="btn btn-primary" type="button">Subscribe</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer>
+<div class="container">
+<div class="row">
+<div class="col-lg-4 mb-4 mb-lg-0">
+<img alt="Pro Truck Logistics Logo" class="footer-logo" src="../ProTruckLogisticsFiles/logo.jpg"/>
+<p>Your reliable partner in logistics and transportation services.</p>
+<div class="mt-3">
+<a class="social-icon" href="#"><i class="fab fa-facebook"></i></a>
+<a class="social-icon" href="#"><i class="fab fa-instagram"></i></a>
+<a class="social-icon" href="#"><i class="fab fa-linkedin"></i></a>
+</div>
+</div>
+<div class="col-md-4 col-lg-2 mb-4 mb-md-0">
+<h5 class="footer-heading">Quick Links</h5>
+<a class="footer-link" href="../index.html">Home</a>
+<a class="footer-link" href="../services.html">Services</a>
+<a class="footer-link" href="../about.html">About Us</a>
+<a class="footer-link" href="../contact.html">Contact</a>
+</div>
+<div class="col-md-4 col-lg-2 mb-4 mb-md-0">
+<h5 class="footer-heading">Services</h5>
+<a class="footer-link" href="../services.html">Customers</a>
+<a class="footer-link" href="../careers.html">Employment</a>
+<a class="footer-link" href="../carriers.html">Carriers</a>
+<a class="footer-link" href="../careers.html">Drivers</a>
+</div>
+<div class="col-lg-4">
+<h5 class="footer-heading">Contact Info</h5>
+<address>
+<p><i class="fas fa-map-marker-alt me-2"></i> Lawrenceville, GA</p>
+<p><i class="fas fa-phone me-2"></i> <a class="footer-link" href="tel:4044688268">404-468-8268</a></p>
+<p><i class="fas fa-envelope me-2"></i> <a class="footer-link" href="mailto:info@protrucklogistics.org">info@protrucklogistics.org</a></p>
+</address>
+</div>
+</div>
+<hr class="mt-4 mb-3" style="border-color: rgba(255,255,255,0.1);"/>
+<div class="row">
+<div class="col-md-6 text-center text-md-start">
+<p class="mb-0">© 2025 Pro Truck Logistics. All rights reserved.</p>
+</div>
+<div class="col-md-6 text-center text-md-end">
+<a class="text-white text-decoration-none me-3" href="../privacy.html">Privacy Policy</a>
+<a class="text-white text-decoration-none" href="../terms.html">Terms of Service</a>
+</div>
+</div>
+</div>
+</footer>
+<!-- Bootstrap JS bundle with Popper from CDN -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

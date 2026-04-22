@@ -1,0 +1,682 @@
+[
+  {
+    "id": 1743209212,
+    "title": "Next-Gen Semi-Truck Cabs: How Driver Comfort is Revolutionizing Fleet Retention",
+    "excerpt": "Next-Gen Semi-Truck Cabs: How Driver Comfort is Revolutionizing Fleet Retention",
+    "date": "March 29, 2025",
+    "category": "Driver Retention",
+    "author": "Sarah Johnson",
+    "read_time": "10 min read",
+    "image": "blog-posts/images/post-image-1743209212.png"
+  },
+  {
+    "id": 1743208063,
+    "title": "Commercial Fleet Electrification: Real-World ROI Data from Early Semi-Truck Adopters",
+    "excerpt": "Commercial Fleet Electrification: Real-World ROI Data from Early Semi-Truck Adopters",
+    "date": "March 29, 2025",
+    "category": "Market Analysis",
+    "author": "Michael Chen",
+    "read_time": "9 min read",
+    "image": "blog-posts/images/post-image-1743208063.png"
+  },
+  {
+    "id": 1743196827,
+    "title": "AI-Powered Route Optimization: Saving Diesel and Hours for Long-Haul Truckers",
+    "excerpt": "Insights on AI-Powered Route Optimization: Saving Diesel and Hours for Long-Haul Truckers.",
+    "date": "March 28, 2025",
+    "category": "Fuel Management",
+    "author": "John Smith",
+    "read_time": "7 min read",
+    "image": "blog-posts/images/post-image-1743196827.png"
+  },
+  {
+    "id": 1743195750,
+    "title": "Commercial Fleet Electrification: Real-World ROI Data from Early Semi-Truck Adopters",
+    "excerpt": "Commercial Fleet Electrification: Real-World ROI Data from Early Semi-Truck Adopters",
+    "date": "March 28, 2025",
+    "category": "Market Analysis",
+    "author": "John Smith",
+    "read_time": "7 min read",
+    "image": "blog-posts/images/post-image-1743195750.png"
+  },
+  {
+    "id": "bp64",
+    "title": "Maximizing Efficiency with Fleet Telematics Integration",
+    "excerpt": "Maximizing Efficiency with Fleet Telematics Integration",
+    "date": "May 29, 2025",
+    "category": "Fleet Management",
+    "author": "John Smith",
+    "read_time": "8 min read",
+    "image": "blog-posts/images/bp64-image.png"
+  },
+  {
+    "id": "bp63",
+    "title": "ELD Mandate Update: Staying Compliant With the Latest Requirements",
+    "excerpt": "ELD Mandate Update: Staying Compliant With the Latest Requirements",
+    "date": "May 28, 2025",
+    "category": "Regulations",
+    "author": "John Smith",
+    "read_time": "10 min read",
+    "image": "blog-posts/images/bp63-image.png"
+  },
+  {
+    "id": "bp62",
+    "title": "Strategies for Mitigating the Impact of Rising Fuel Prices on Truck Fleets",
+    "excerpt": "Insights on Strategies for Mitigating the Impact of Rising Fuel Prices on Truck Fleets.",
+    "date": "May 27, 2025",
+    "category": "Fuel Management",
+    "author": "Michael Chen",
+    "read_time": "8 min read",
+    "image": "blog-posts/images/bp62-image.png"
+  },
+  {
+    "id": "bp61",
+    "title": "Navigating the Adoption of Electric Semi-Trucks in Long-Haul Transport",
+    "excerpt": "Revolutionizing Long-Haul Transport: Navigating the Adoption of Electric Semi-Trucks",
+    "date": "May 26, 2025",
+    "category": "Industry Trends",
+    "author": "Sarah Johnson",
+    "read_time": "9 min read",
+    "image": "blog-posts/images/bp61-image.png"
+  },
+  {
+    "id": "bp60",
+    "title": "Advanced Driver Assistance Systems (ADAS): The Future of Trucking Safety?",
+    "excerpt": "Advanced Driver Assistance Systems (ADAS): The Future of Trucking Safety?",
+    "date": "May 25, 2025",
+    "category": "Technology Trends",
+    "author": "John Smith",
+    "read_time": "7 min read",
+    "image": "blog-posts/images/bp60-image.png"
+  },
+  {
+    "id": "bp59",
+    "title": "Electric Semi-Trucks Gain Momentum: Evaluating Operational Impacts",
+    "excerpt": "Electric Semi-Trucks Gain Momentum: Evaluating Operational Impacts",
+    "date": "May 24, 2025",
+    "category": "Sustainability",
+    "author": "John Smith",
+    "read_time": "10 min read",
+    "image": "blog-posts/images/bp59-image.png"
+  },
+  {
+    "id": "bp58",
+    "title": "Impact of IoT and Telematics on Semi-Truck Fleet Performance",
+    "excerpt": "Impact of IoT and Telematics on Semi-Truck Fleet Performance",
+    "date": "May 23, 2025",
+    "category": "Fleet Management",
+    "author": "Sarah Johnson",
+    "read_time": "9 min read",
+    "image": "blog-posts/images/bp58-image.png"
+  },
+  {
+    "id": "bp57",
+    "title": "Advanced Fleet Management Software: Optimizing Long-Haul Operations",
+    "excerpt": "Advanced Fleet Management Software: Optimizing Long-Haul Operations",
+    "date": "May 22, 2025",
+    "category": "Fleet Management",
+    "author": "Michael Chen",
+    "read_time": "8 min read",
+    "image": "blog-posts/images/bp57-image.png"
+  },
+  {
+    "id": "bp56",
+    "title": "Addressing the Semi-Truck Driver Shortage Crisis",
+    "excerpt": "Addressing the Semi-Truck Driver Shortage Crisis",
+    "date": "May 21, 2025",
+    "category": "Driver Recruitment",
+    "author": "Sarah Johnson",
+    "read_time": "9 min read",
+    "image": "blog-posts/images/bp56-image.png"
+  },
+  {
+    "id": "bp55",
+    "title": "Implementation of Advanced Driver-Assistance Systems (ADAS) in Semi-Trucks",
+    "excerpt": "Enhancing Safety in Commercial Trucking: Implementing ADAS in Semi-Trucks",
+    "date": "May 20, 2025",
+    "category": "Technology Trends",
+    "author": "Sarah Johnson",
+    "read_time": "8 min read",
+    "image": "blog-posts/images/bp55-image.png"
+  },
+  {
+    "id": "bp54",
+    "title": "Rising Diesel Costs and Efficiency Strategies for Trucking Companies",
+    "excerpt": "The Challenge of Rising Diesel Costs for Trucking Companies",
+    "date": "May 19, 2025",
+    "category": "Fuel Management",
+    "author": "Michael Chen",
+    "read_time": "9 min read",
+    "image": "blog-posts/images/bp54-image.png"
+  },
+  {
+    "id": "bp53",
+    "title": "Federal Regulations Update: Staying Compliant in the Fast-Changing Trucking Landscape",
+    "excerpt": "Insights on Federal Regulations Update: Staying Compliant in the Fast-Changing Trucking Landscape.",
+    "date": "May 18, 2025",
+    "category": "Regulations",
+    "author": "Sarah Johnson",
+    "read_time": "9 min read",
+    "image": "blog-posts/images/bp53-image.png"
+  },
+  {
+    "id": "bp52",
+    "title": "Autonomous Trucking on the Rise: What It Means for Freight's Future",
+    "excerpt": "Autonomous Trucking on the Rise: What It Means for Freight's Future",
+    "date": "May 17, 2025",
+    "category": "Industry Trends",
+    "author": "John Smith",
+    "read_time": "8 min read",
+    "image": "blog-posts/images/bp52-image.png"
+  },
+  {
+    "id": "bp51",
+    "title": "Balancing Act: Navigating Freight Rate Fluctuations Amid Economic Shifts",
+    "excerpt": "Insights on Balancing Act: Navigating Freight Rate Fluctuations Amid Economic Shifts.",
+    "date": "May 16, 2025",
+    "category": "Economic Outlook",
+    "author": "Michael Chen",
+    "read_time": "7 min read",
+    "image": "blog-posts/images/bp51-image.png"
+  },
+  {
+    "id": "bp50",
+    "title": "Embracing the Green Revolution: How Electric Semi-Trucks Are Shaping the Future of Freight Hauling",
+    "excerpt": "Insights on Embracing the Green Revolution: How Electric Semi-Trucks Are Shaping the Future of Freight Hauling.",
+    "date": "May 15, 2025",
+    "category": "Industry Trends",
+    "author": "John Smith",
+    "read_time": "8 min read",
+    "image": "blog-posts/images/bp50-image.png"
+  },
+  {
+    "id": "bp49",
+    "title": "Exploring the Surge in Semi-Truck Cybersecurity Threats",
+    "excerpt": "Exploring the Surge in Semi-Truck Cybersecurity Threats",
+    "date": "May 14, 2025",
+    "category": "Market Analysis",
+    "author": "Michael Chen",
+    "read_time": "7 min read",
+    "image": "blog-posts/images/bp49-image.png"
+  },
+  {
+    "id": "bp48",
+    "title": "Infrastructure Insights: Impact of Recent Federal Funding on Freight Corridors",
+    "excerpt": "Infrastructure Insights: Impact of Recent Federal Funding on Freight Corridors",
+    "date": "May 13, 2025",
+    "category": "Fuel Management",
+    "author": "Sarah Johnson",
+    "read_time": "10 min read",
+    "image": "blog-posts/images/bp48-image.png"
+  },
+  {
+    "id": "bp47",
+    "title": "Navigating the 2023 Infrastructure for Autonomous Semi-Trucks",
+    "excerpt": "Pro Truck Logistics Blog: Navigating the 2023 Infrastructure for Autonomous Semi-Trucks",
+    "date": "May 12, 2025",
+    "category": "Technology Trends",
+    "author": "John Smith",
+    "read_time": "10 min read",
+    "image": "blog-posts/images/bp47-image.png"
+  },
+  {
+    "id": "bp46",
+    "title": "Advancements in Electric Semi-Truck Technology and Its Impact on Fleet Management",
+    "excerpt": "Advancements in Electric Semi-Truck Technology and Its Impact on Fleet Management",
+    "date": "May 11, 2025",
+    "category": "Fleet Management",
+    "author": "Michael Chen",
+    "read_time": "9 min read",
+    "image": "blog-posts/images/bp46-image.png"
+  },
+  {
+    "id": "bp45",
+    "title": "Electrification of Semi-Trucks Gains Momentum",
+    "excerpt": "The Future Is Electric: Sustainable Solutions for Commercial Trucking",
+    "date": "May 10, 2025",
+    "category": "Fleet Management",
+    "author": "Michael Chen",
+    "read_time": "10 min read",
+    "image": "blog-posts/images/bp45-image.png"
+  },
+  {
+    "id": "bp44",
+    "title": "Navigating a Tight Labor Market: Recruitment Strategies for Commercial Truck Drivers",
+    "excerpt": "Navigating a Tight Labor Market: Recruitment Strategies for Commercial Truck Drivers",
+    "date": "May 09, 2025",
+    "category": "Driver Recruitment",
+    "author": "Sarah Johnson",
+    "read_time": "10 min read",
+    "image": "blog-posts/images/bp44-image.png"
+  },
+  {
+    "id": "bp43",
+    "title": "Enhanced Driver Experience: The Impact of In-Cab Technologies and Amenities on Driver Retention",
+    "excerpt": "Enhanced Driver Experience: The Impact of In-Cab Technologies and Amenities on Driver Retention in Semi-Truck Logistics",
+    "date": "May 08, 2025",
+    "category": "Driver Retention",
+    "author": "Sarah Johnson",
+    "read_time": "8 min read",
+    "image": "blog-posts/images/bp43-image.png"
+  },
+  {
+    "id": "bp42",
+    "title": "Navigating the Growing Trend of E-commerce on Freight Transportation",
+    "excerpt": "The Growing Trend of E-commerce: A Game Changer for Semi-Truck Operators",
+    "date": "May 07, 2025",
+    "category": "Industry Trends",
+    "author": "Sarah Johnson",
+    "read_time": "7 min read",
+    "image": "blog-posts/images/bp42-image.png"
+  },
+  {
+    "id": "bp41",
+    "title": "The Impact of Autonomous Trucking on the Future of Freight",
+    "excerpt": "The Impact of Autonomous Trucking on the Future of Freight",
+    "date": "May 06, 2025",
+    "category": "Technology Trends",
+    "author": "Michael Chen",
+    "read_time": "9 min read",
+    "image": "blog-posts/images/bp41-image.png"
+  },
+  {
+    "id": "bp40",
+    "title": "New Emissions Regulations Impacting Fleet Operations",
+    "excerpt": "New Emissions Regulations Impacting Fleet Operations",
+    "date": "May 05, 2025",
+    "category": "Sustainability",
+    "author": "John Smith",
+    "read_time": "10 min read",
+    "image": "blog-posts/images/bp40-image.png"
+  },
+  {
+    "id": "bp39",
+    "title": "Autonomous Trucking Milestones: The Journey Toward Self-Driving Freight Haulers",
+    "excerpt": "Insights on Autonomous Trucking Milestones: The Journey Toward Self-Driving Freight Haulers.",
+    "date": "May 04, 2025",
+    "category": "Technology Trends",
+    "author": "Michael Chen",
+    "read_time": "9 min read",
+    "image": "blog-posts/images/bp39-image.png"
+  },
+  {
+    "id": "bp38",
+    "title": "Combating the Driver Shortage: Strategies That Are Reshaping the Workforce",
+    "excerpt": "Combating the Driver Shortage: Strategies That Are Reshaping the Workforce",
+    "date": "May 03, 2025",
+    "category": "Driver Recruitment",
+    "author": "John Smith",
+    "read_time": "10 min read",
+    "image": "blog-posts/images/bp38-image.png"
+  },
+  {
+    "id": "bp37",
+    "title": "Advancements in Electric Semi-Trucks: Navigating the Road to Sustainability",
+    "excerpt": "Advancements in Electric Semi-Trucks: Navigating the Road to Sustainability",
+    "date": "May 02, 2025",
+    "category": "Sustainability",
+    "author": "John Smith",
+    "read_time": "9 min read",
+    "image": "blog-posts/images/bp37-image.png"
+  },
+  {
+    "id": "bp36",
+    "title": "Infrastructure Upgrades and Their Effect on Semi-Truck Logistics",
+    "excerpt": "Infrastructure Upgrades and Their Effect on Semi-Truck Logistics",
+    "date": "May 01, 2025",
+    "category": "Industry Trends",
+    "author": "Sarah Johnson",
+    "read_time": "8 min read",
+    "image": "blog-posts/images/bp36-image.png"
+  },
+  {
+    "id": "bp35",
+    "title": "Navigating Supply Chain Uncertainty: Strategies for Trucking Logistics",
+    "excerpt": "Pro Truck Logistics: Navigating Supply Chain Uncertainty",
+    "date": "April 30, 2025",
+    "category": "Supply Chain Management",
+    "author": "Michael Chen",
+    "read_time": "7 min read",
+    "image": "blog-posts/images/bp35-image.png"
+  },
+  {
+    "id": "bp34",
+    "title": "Securing the Supply Chain: Cybersecurity Concerns in Trucking Logistics",
+    "excerpt": "Securing the Supply Chain: Cybersecurity Concerns in Trucking Logistics",
+    "date": "April 29, 2025",
+    "category": "Technology Trends",
+    "author": "Michael Chen",
+    "read_time": "8 min read",
+    "image": "blog-posts/images/bp34-image.png"
+  },
+  {
+    "id": "bp33",
+    "title": "Enhancing Supply Chain Resilience in Freight Hauling",
+    "excerpt": "Enhancing Supply Chain Resilience in Freight Hauling",
+    "date": "April 28, 2025",
+    "category": "Supply Chain Management",
+    "author": "Sarah Johnson",
+    "read_time": "9 min read",
+    "image": "blog-posts/images/bp33-image.png"
+  },
+  {
+    "id": "bp32",
+    "title": "The Impact of Latest Fuel Efficiency Standards on Semi-Trucks",
+    "excerpt": "The Impact of Latest Fuel Efficiency Standards on Semi-Trucks",
+    "date": "April 27, 2025",
+    "category": "Fuel Management",
+    "author": "Sarah Johnson",
+    "read_time": "8 min read",
+    "image": "blog-posts/images/bp32-image.png"
+  },
+  {
+    "id": "bp31",
+    "title": "The Increase in E-Commerce: How It's Reshaping Trucking Logistics",
+    "excerpt": "The Increase in E-Commerce: How It's Reshaping Trucking Logistics",
+    "date": "April 26, 2025",
+    "category": "Industry Trends",
+    "author": "Sarah Johnson",
+    "read_time": "7 min read",
+    "image": "blog-posts/images/bp31-image.png"
+  },
+  {
+    "id": "bp30",
+    "title": "Adoption of Electric Semi-Trucks: Are They the Future of Freight?",
+    "excerpt": "The Future of Trucking: Electric Semi-Trucks",
+    "date": "April 25, 2025",
+    "category": "Industry Trends",
+    "author": "Sarah Johnson",
+    "read_time": "7 min read",
+    "image": "blog-posts/images/bp30-image.png"
+  },
+  {
+    "id": "bp29",
+    "title": "Autonomous Semi-Trucks Gain Momentum: The Road Ahead for Driverless Hauling",
+    "excerpt": "Autonomous Semi-Trucks Gain Momentum: The Road Ahead for Driverless Hauling",
+    "date": "April 24, 2025",
+    "category": "Technology Trends",
+    "author": "John Smith",
+    "read_time": "8 min read",
+    "image": "blog-posts/images/bp29-image.png"
+  },
+  {
+    "id": "bp28",
+    "title": "Diesel Prices Surge: Strategies for Semi-Truck Fleets to Mitigate Fuel Costs",
+    "excerpt": "Diesel Prices Surge: Strategies for Semi-Truck Fleets to Mitigate Fuel Costs",
+    "date": "April 23, 2025",
+    "category": "Fuel Management",
+    "author": "Sarah Johnson",
+    "read_time": "9 min read",
+    "image": "blog-posts/images/bp28-image.png"
+  },
+  {
+    "id": "bp27",
+    "title": "Navigating the ELD Mandate: Compliance and Benefits",
+    "excerpt": "Navigating the ELD Mandate: Compliance and Benefits",
+    "date": "April 22, 2025",
+    "category": "Technology Trends",
+    "author": "Sarah Johnson",
+    "read_time": "10 min read",
+    "image": "blog-posts/images/bp27-image.png"
+  },
+  {
+    "id": "bp26",
+    "title": "The Impact of Autonomous Trucking: Assessing the Latest Pilots and Partnerships",
+    "excerpt": "The Impact of Autonomous Trucking: Assessing the Latest Pilots and Partnerships",
+    "date": "April 21, 2025",
+    "category": "Industry Trends",
+    "author": "Michael Chen",
+    "read_time": "10 min read",
+    "image": "blog-posts/images/bp26-image.png"
+  },
+  {
+    "id": "bp25",
+    "title": "Driver Shortage Solutions: Recruiting and Retaining Commercial Truck Drivers",
+    "excerpt": "Driver Shortage Solutions: Recruiting and Retaining Commercial Truck Drivers",
+    "date": "April 19, 2025",
+    "category": "Driver Recruitment",
+    "author": "Michael Chen",
+    "read_time": "9 min read",
+    "image": "blog-posts/images/bp25-image.png"
+  },
+  {
+    "id": "bp24",
+    "title": "Addressing the Driver Shortage: Strategies for Recruitment and Retention",
+    "excerpt": "Addressing the Driver Shortage: Strategies for Recruitment and Retention",
+    "date": "April 18, 2025",
+    "category": "Driver Recruitment",
+    "author": "John Smith",
+    "read_time": "10 min read",
+    "image": "blog-posts/images/bp24-image.png"
+  },
+  {
+    "id": "bp23",
+    "title": "Economic Shifts: Fuel Prices and their Effect on Freight Costs",
+    "excerpt": "Economic Shifts: Fuel Prices and their Effect on Freight Costs",
+    "date": "April 18, 2025",
+    "category": "Economic Outlook",
+    "author": "Michael Chen",
+    "read_time": "10 min read",
+    "image": "blog-posts/images/bp23-image.png"
+  },
+  {
+    "id": "bp22",
+    "title": "Autonomous Trucking Makes Headway: The Future of Freight",
+    "excerpt": "Autonomous Trucking Makes Headway: The Future of Freight",
+    "date": "April 17, 2025",
+    "category": "Technology Trends",
+    "author": "John Smith",
+    "read_time": "7 min read",
+    "image": "blog-posts/images/bp22-image.png"
+  },
+  {
+    "id": "bp21",
+    "title": "Enhancing Long-Haul Efficiency: Predictive Maintenance and IoT Integration",
+    "excerpt": "Enhancing Long-Haul Efficiency: Predictive Maintenance and IoT Integration",
+    "date": "April 16, 2025",
+    "category": "Fleet Management",
+    "author": "Michael Chen",
+    "read_time": "10 min read",
+    "image": "blog-posts/images/bp21-image.png"
+  },
+  {
+    "id": "bp20",
+    "title": "Autonomous Trucking Revolution: How Self-Driving Semis Are Shaping the Road Ahead",
+    "excerpt": "Autonomous Trucking Revolution: How Self-Driving Semis Are Shaping the Road Ahead",
+    "date": "April 15, 2025",
+    "category": "Technology Trends",
+    "author": "John Smith",
+    "read_time": "10 min read",
+    "image": "blog-posts/images/bp20-image.png"
+  },
+  {
+    "id": "bp19",
+    "title": "Real-Time Data Analytics: Transforming Fleet Management for Semi-Trucks",
+    "excerpt": "Real-Time Data Analytics: Transforming Fleet Management for Semi-Trucks",
+    "date": "April 14, 2025",
+    "category": "Fleet Management",
+    "author": "Sarah Johnson",
+    "read_time": "9 min read",
+    "image": "blog-posts/images/bp19-image.png"
+  },
+  {
+    "id": "bp18",
+    "title": "Navigating the ELD Mandate: Compliance and Efficiency",
+    "excerpt": "The Ultimate Guide to Navigating the ELD Mandate for Semi-Truck Operators",
+    "date": "April 12, 2025",
+    "category": "Regulations",
+    "author": "John Smith",
+    "read_time": "10 min read",
+    "image": "blog-posts/images/bp18-image.png"
+  },
+  {
+    "id": "bp17",
+    "title": "Ensuring Cybersecurity in Commercial Trucking: Protecting Fleet Data",
+    "excerpt": "Ensuring Cybersecurity in Commercial Trucking: Protecting Fleet Data",
+    "date": "April 11, 2025",
+    "category": "Market Analysis",
+    "author": "Michael Chen",
+    "read_time": "7 min read",
+    "image": "blog-posts/images/bp17-image.png"
+  },
+  {
+    "id": "bp16",
+    "title": "The Rise of Autonomous Semi-Trucks: Implications for Fleet Managers",
+    "excerpt": "The Rise of Autonomous Semi-Trucks: Implications for Fleet Managers",
+    "date": "April 10, 2025",
+    "category": "Technology Trends",
+    "author": "Michael Chen",
+    "read_time": "8 min read",
+    "image": "blog-posts/images/bp16-image.png"
+  },
+  {
+    "id": "bp15",
+    "title": "Regulations Update: New ELD Mandates to Affect Fleet Operations",
+    "excerpt": "Regulations Update: New ELD Mandates to Affect Fleet Operations",
+    "date": "April 09, 2025",
+    "category": "Regulations",
+    "author": "Sarah Johnson",
+    "read_time": "10 min read",
+    "image": "blog-posts/images/bp15-image.png"
+  },
+  {
+    "id": "bp14",
+    "title": "Upgrade Your Fleet: The Impact of Advanced Driver Assistance Systems (ADAS)",
+    "excerpt": "Upgrade Your Fleet: The Impact of Advanced Driver Assistance Systems (ADAS)",
+    "date": "April 08, 2025",
+    "category": "Safety",
+    "author": "John Smith",
+    "read_time": "10 min read",
+    "image": "blog-posts/images/bp14-image.png"
+  },
+  {
+    "id": "bp13",
+    "title": "AI Enhancement: Leveraging Advanced Analytics for Fleet Optimization",
+    "excerpt": "AI Enhancement: Leveraging Advanced Analytics for Fleet Optimization",
+    "date": "April 07, 2025",
+    "category": "Fleet Management",
+    "author": "Michael Chen",
+    "read_time": "8 min read",
+    "image": "blog-posts/images/bp13-image.png"
+  },
+  {
+    "id": "bp12",
+    "title": "Navigating the Shift to Electric Semi-Trucks: Strategies for a Greener Fleet",
+    "excerpt": "Insights on Navigating the Shift to Electric Semi-Trucks: Strategies for a Greener Fleet.",
+    "date": "April 06, 2025",
+    "category": "Sustainability",
+    "author": "Michael Chen",
+    "read_time": "9 min read",
+    "image": "blog-posts/images/bp12-image.png"
+  },
+  {
+    "id": "bp11",
+    "title": "Rising Diesel Prices and the Impact on Freight Costs",
+    "excerpt": "The Impact of Rising Diesel Prices on Freight Costs",
+    "date": "April 05, 2025",
+    "category": "Fuel Management",
+    "author": "John Smith",
+    "read_time": "10 min read",
+    "image": "blog-posts/images/bp11-image.png"
+  },
+  {
+    "id": "bp10",
+    "title": "Addressing the Semi-Truck Driver Shortage with Innovative Recruitment Strategies",
+    "excerpt": "Addressing the Semi-Truck Driver Shortage with Innovative Recruitment Strategies",
+    "date": "April 04, 2025",
+    "category": "Driver Recruitment",
+    "author": "John Smith",
+    "read_time": "7 min read",
+    "image": "blog-posts/images/bp10-image.png"
+  },
+  {
+    "id": "bp9",
+    "title": "How AI and Big Data are Revolutionizing Fleet Management",
+    "excerpt": "How AI and Big Data are Revolutionizing Fleet Management",
+    "date": "April 03, 2025",
+    "category": "Fleet Management",
+    "author": "John Smith",
+    "read_time": "7 min read",
+    "image": "blog-posts/images/bp9-image.png"
+  },
+  {
+    "id": "bp8",
+    "title": "Navigating the Surge in E-Commerce: Adapting Semi-Truck Fleets for Last-Mile Delivery Challenges",
+    "excerpt": "An Overview of Adapting Semi-Truck Fleets for Last-Mile Delivery Challenges in the E-Commerce Era",
+    "date": "April 02, 2025",
+    "category": "Fleet Management",
+    "author": "Sarah Johnson",
+    "read_time": "9 min read",
+    "image": "blog-posts/images/bp8-image.png"
+  },
+  {
+    "id": "bp7",
+    "title": "Challenges of Compliance: Adapting to Changing ELD Regulations",
+    "excerpt": "The Challenges of Compliance for Semi-Truck Operators: Adapting to Changing ELD Regulations",
+    "date": "April 01, 2025",
+    "category": "Regulations",
+    "author": "John Smith",
+    "read_time": "8 min read",
+    "image": "blog-posts/images/bp7-image.png"
+  },
+  {
+    "id": "bp6",
+    "title": "Rising Fuel Costs and Efficiency Measures in Trucking",
+    "excerpt": "The Impact of Rising Fuel Costs on Semi-Truck Operators",
+    "date": "March 31, 2025",
+    "category": "Fuel Management",
+    "author": "John Smith",
+    "read_time": "9 min read",
+    "image": "blog-posts/images/bp6-image.png"
+  },
+  {
+    "id": "bp5",
+    "title": "The Impact of Autonomous Trucking on Long-Haul Transportation",
+    "excerpt": "The Impact of Autonomous Trucking on Long-Haul Transportation",
+    "date": "March 30, 2025",
+    "category": "Technology Trends",
+    "author": "John Smith",
+    "read_time": "10 min read",
+    "image": "blog-posts/images/bp5-image.png"
+  },
+  {
+    "id": "bp4",
+    "title": "Navigating the ELD Mandate: Leveraging Technology for Compliance and Efficiency",
+    "excerpt": "Insights on Navigating the ELD Mandate: Leveraging Technology for Compliance and Efficiency.",
+    "date": "March 29, 2025",
+    "category": "Technology Trends",
+    "author": "Sarah Johnson",
+    "read_time": "9 min read",
+    "image": "blog-posts/images/bp4-image.png"
+  },
+  {
+    "id": "bp3",
+    "title": "Infrastructure Legislation Boosts Highway Projects: What It Means for Haulers",
+    "excerpt": "Infrastructure Legislation Boosts Highway Projects: What It Means for Haulers",
+    "date": "March 29, 2025",
+    "category": "Regulations",
+    "author": "Sarah Johnson",
+    "read_time": "7 min read",
+    "image": "blog-posts/images/bp3-image.png"
+  },
+  {
+    "id": "bp2",
+    "title": "Autonomous Trucking: On the Horizon of Revolutionizing Freight Transport",
+    "excerpt": "Autonomous Trucking: On the Horizon of Revolutionizing Freight Transport",
+    "date": "March 29, 2025",
+    "category": "Technology Trends",
+    "author": "Michael Chen",
+    "read_time": "8 min read",
+    "image": "blog-posts/images/bp2-image.png"
+  },
+  {
+    "id": "bp1",
+    "title": "Cybersecurity in Freight Transport: Protecting Your Fleet",
+    "excerpt": "Cybersecurity in Freight Transport: Protecting Your Fleet",
+    "date": "March 29, 2025",
+    "category": "Fleet Management",
+    "author": "Michael Chen",
+    "read_time": "10 min read",
+    "image": "blog-posts/images/bp1-image.png"
+  }
+]

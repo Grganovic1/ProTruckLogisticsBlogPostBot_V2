@@ -3,12 +3,15 @@
 Automated blog generator for Pro Truck Logistics.
 
 Pipeline:
-1) Collect trucking/logistics topics from live websites (with AI-assisted fallback)
-2) Generate SEO-friendly post metadata + article body
+1) Collect trucking/logistics topic context from live websites
+2) Use OpenAI to generate topic framing, SEO metadata, article body, and cover images
 3) Build blog-post HTML from template
 4) Update blog-posts/index.json
-5) Upload generated files to hosting via SFTP/FTP
+5) Rebuild rss.xml and sitemap.xml
+6) Upload only the newly generated artifacts to hosting via FTP/SFTP
 """
+
+from __future__ import annotations
 
 import base64
 import ftplib
@@ -17,11 +20,13 @@ import os
 import random
 import re
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from difflib import SequenceMatcher
 from io import BytesIO
 from pathlib import Path
 from urllib.parse import quote, urlparse
+from xml.etree import ElementTree as ET
+from xml.sax.saxutils import escape
 
 import html2text
 import paramiko
@@ -44,7 +49,6 @@ def env_bool(name: str, default: bool = False) -> bool:
     value = env_value(name)
     if value is None:
         return default
-
     return value.lower() in {"1", "true", "yes", "on"}
 
 
@@ -63,8 +67,11 @@ def env_path(name: str, default: Path) -> Path:
     value = env_value(name)
     if value is None:
         return default
-
     return Path(value).expanduser().resolve()
+
+
+def log(message: str) -> None:
+    print(message, flush=True)
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -73,22 +80,22 @@ LOCAL_BLOG_DIR.mkdir(parents=True, exist_ok=True)
 IMAGES_DIR = LOCAL_BLOG_DIR / "images"
 IMAGES_DIR.mkdir(parents=True, exist_ok=True)
 TEMPLATE_PATH = env_path("BLOG_TEMPLATE_PATH", SCRIPT_DIR / "blog-post-template.html")
+RSS_PATH = env_path("RSS_PATH", SCRIPT_DIR / "rss.xml")
+SITEMAP_PATH = env_path("SITEMAP_PATH", SCRIPT_DIR / "sitemap.xml")
 
-# Provider configuration (ecomagent for text/topic + OpenAI for images)
-ECOMAGENT_API_KEY = env_value("ECOMAGENT_API_KEY") or env_value("OPENAI_API_KEY")
-ECOMAGENT_BASE_URL = env_value("ECOMAGENT_BASE_URL", "https://api.ecomagent.in/v1").rstrip("/")
-ECOMAGENT_MODEL = env_value("ECOMAGENT_MODEL", "claude-opus-4.6")
-ECOMAGENT_TOPIC_MODEL = env_value("ECOMAGENT_TOPIC_MODEL", ECOMAGENT_MODEL)
-
+# OpenAI configuration
 OPENAI_API_KEY = env_value("OPENAI_API_KEY")
 OPENAI_BASE_URL = env_value("OPENAI_BASE_URL", "https://api.openai.com/v1").rstrip("/")
-OPENAI_IMAGE_MODEL = env_value("OPENAI_IMAGE_MODEL", "gpt-image-1")
+OPENAI_TEXT_MODEL = env_value("OPENAI_TEXT_MODEL", "gpt-5.4-mini")
+OPENAI_TOPIC_MODEL = env_value("OPENAI_TOPIC_MODEL", OPENAI_TEXT_MODEL)
+OPENAI_IMAGE_MODEL = env_value("OPENAI_IMAGE_MODEL", "gpt-image-1.5")
 OPENAI_IMAGE_SIZE = env_value("OPENAI_IMAGE_SIZE", "1024x1024")
+OPENAI_IMAGE_QUALITY = env_value("OPENAI_IMAGE_QUALITY", "medium")
 REQUIRE_IMAGE_GENERATION = env_bool("REQUIRE_IMAGE_GENERATION", True)
 
-# Site/Publishing configuration
+# Site/publishing configuration
 SITE_BASE_URL = env_value("SITE_BASE_URL", "https://protrucklogistics.org").rstrip("/")
-POSTS_TO_GENERATE = max(1, env_int("POSTS_TO_GENERATE", 1))
+POSTS_TO_GENERATE = max(1, env_int("POSTS_TO_GENERATE", 3))
 SKIP_UPLOAD = env_bool("SKIP_UPLOAD", False)
 REQUEST_TIMEOUT_SECONDS = env_int("REQUEST_TIMEOUT_SECONDS", 30)
 
@@ -97,37 +104,37 @@ FTP_HOST = env_value("FTP_HOST", "")
 FTP_USER = env_value("FTP_USER", "")
 FTP_PASS = env_value("FTP_PASS", "")
 FTP_BLOG_DIR = env_value("FTP_BLOG_DIR", "/blog-posts/")
-FTP_IS_SFTP = env_bool("FTP_IS_SFTP", True)
+
+
+def derive_site_root_dir(blog_dir: str) -> str:
+    stripped = (blog_dir or "").strip().strip("/")
+    if not stripped:
+        return "/"
+
+    parts = stripped.split("/")
+    if len(parts) <= 1:
+        return "/"
+
+    return "/" + "/".join(parts[:-1]) + "/"
+
+
+FTP_SITE_ROOT_DIR = env_value("FTP_SITE_ROOT_DIR", derive_site_root_dir(FTP_BLOG_DIR))
+FTP_IS_SFTP = env_bool("FTP_IS_SFTP", False)
 SFTP_STRICT_HOST_KEY = env_bool("SFTP_STRICT_HOST_KEY", False)
 SFTP_KNOWN_HOSTS = env_value("SFTP_KNOWN_HOSTS", "")
 
 
 BLOG_CATEGORIES = [
-    "Industry Trends", "Market Analysis", "Economic Outlook", "Logistics Insights",
-    "Supply Chain Management", "Warehousing", "Inventory Management", "Last-Mile Delivery",
-    "Cross-Docking", "Intermodal Transportation", "Freight Forwarding", "Order Fulfillment",
-    "Driver Tips", "Driver Wellness", "Driver Recruitment", "Driver Retention",
-    "Owner-Operator Resources", "Career Development", "Road Life", "Driver Stories",
-    "Sustainability", "Green Logistics", "Carbon Reduction", "Alternative Fuels",
-    "Environmental Compliance", "Eco-Friendly Practices", "Electric Vehicles", "Renewable Energy",
-    "Technology Trends", "AI & Automation", "Telematics", "Blockchain in Logistics",
-    "IoT Solutions", "Data Analytics", "Digital Transformation", "Route Optimization",
-    "Warehouse Automation", "Transportation Management Systems", "Fleet Tech",
-    "Safety", "Regulations", "Compliance Updates", "Risk Management",
-    "HOS Regulations", "DOT Compliance", "FMCSA Updates", "Insurance Insights",
-    "Security Measures", "Accident Prevention", "Cargo Security",
-    "Fleet Management", "Maintenance Tips", "Vehicle Selection", "Asset Utilization",
-    "Fleet Efficiency", "Fuel Management", "Preventative Maintenance", "Equipment Upgrades",
-    "Business Growth", "Financial Management", "Strategic Planning", "Competitive Advantage",
-    "Cost Reduction", "Revenue Optimization", "Customer Experience", "Service Expansion",
-    "LTL Shipping", "FTL Transport", "Refrigerated Logistics", "Hazmat Transportation",
-    "Heavy Haul", "Expedited Shipping", "Specialized Freight", "Bulk Transport",
-    "International Shipping", "Global Supply Chains", "Cross-Border Transport", "Import/Export",
-    "Trade Compliance", "Customs Regulations", "Port Operations", "Global Logistics Trends",
-    "Customer Service", "Relationship Management", "Shipper Insights", "Client Success Stories",
-    "Service Improvements", "Client Retention", "Value-Added Services",
-    "Conference Takeaways", "Industry Events", "Trade Shows", "Webinar Recaps",
-    "Expert Interviews", "Industry Awards", "Case Studies"
+    "Industry Trends",
+    "Fleet Management",
+    "Regulations",
+    "Fuel Management",
+    "Safety",
+    "Technology Trends",
+    "Driver Retention",
+    "Supply Chain Management",
+    "Economic Outlook",
+    "Logistics Insights",
 ]
 
 AUTHORS = [
@@ -135,20 +142,20 @@ AUTHORS = [
         "name": "John Smith",
         "position": "Logistics Specialist",
         "bio": "John has over 15 years of experience in the logistics industry, specializing in supply chain optimization and transportation management.",
-        "image": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3"
+        "image": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3",
     },
     {
         "name": "Sarah Johnson",
         "position": "Transportation Analyst",
         "bio": "Sarah is an expert in transportation economics and regulatory compliance with a background in both private sector logistics and government oversight.",
-        "image": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3"
+        "image": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3",
     },
     {
         "name": "Michael Chen",
         "position": "Technology Director",
         "bio": "Michael specializes in logistics technology integration, helping companies leverage AI, IoT, and analytics to optimize supply chains.",
-        "image": "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3"
-    }
+        "image": "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3",
+    },
 ]
 
 TRUCKING_SOURCES = [
@@ -156,39 +163,48 @@ TRUCKING_SOURCES = [
         "url": "https://www.ttnews.com/articles/logistics",
         "article_selector": "article",
         "title_selector": "h2,h3",
-        "summary_selector": "p,div.field--name-field-deckhead"
+        "summary_selector": "p,div.field--name-field-deckhead",
     },
     {
         "url": "https://www.ccjdigital.com/",
         "article_selector": "article",
         "title_selector": "h2,h3",
-        "summary_selector": "p.entry-summary,p"
+        "summary_selector": "p.entry-summary,p",
     },
     {
         "url": "https://www.overdriveonline.com/",
         "article_selector": "article",
         "title_selector": "h2,h3",
-        "summary_selector": "p"
+        "summary_selector": "p",
     },
     {
         "url": "https://www.fleetowner.com/",
         "article_selector": "article,div.node--type-article",
         "title_selector": "h2,h3",
-        "summary_selector": "p,div.field--name-field-subheadline"
+        "summary_selector": "p,div.field--name-field-subheadline",
     },
 ]
 
-text_client = OpenAI(api_key=ECOMAGENT_API_KEY, base_url=ECOMAGENT_BASE_URL) if ECOMAGENT_API_KEY else None
-image_client = OpenAI(api_key=OPENAI_API_KEY, base_url=OPENAI_BASE_URL) if OPENAI_API_KEY else None
+STATIC_SITEMAP_PAGES = [
+    "index.html",
+    "about.html",
+    "services.html",
+    "contact.html",
+    "blog.html",
+    "careers.html",
+    "carriers.html",
+    "agents.html",
+    "privacy.html",
+    "terms.html",
+    "track-shipment.html",
+]
+
+openai_client = OpenAI(api_key=OPENAI_API_KEY, base_url=OPENAI_BASE_URL) if OPENAI_API_KEY else None
 
 
-def log(message: str) -> None:
-    print(message, flush=True)
-
-
-def clean_text(value: str, max_len: int | None = None) -> str:
-    text = (value or "").strip()
-    text = re.sub(r"^```(?:json|html)?\s*", "", text, flags=re.IGNORECASE)
+def clean_text(value: str | None, max_len: int | None = None) -> str:
+    text = str(value or "").strip()
+    text = re.sub(r"^```(?:json|html|xml)?\s*", "", text, flags=re.IGNORECASE)
     text = re.sub(r"\s*```$", "", text)
     text = text.replace("\r", " ")
     text = re.sub(r"\s+", " ", text).strip()
@@ -201,7 +217,7 @@ def parse_json_from_response(raw_text: str):
     if not raw_text:
         raise ValueError("Empty model response")
 
-    candidates = []
+    candidates: list[str] = []
     block = re.search(r"```(?:json)?\s*([\s\S]*?)\s*```", raw_text, flags=re.IGNORECASE)
     if block:
         candidates.append(block.group(1).strip())
@@ -225,12 +241,12 @@ def parse_json_from_response(raw_text: str):
     raise ValueError("Could not parse JSON from model response")
 
 
-def call_model(prompt: str, model: str | None = None) -> str:
-    if text_client is None:
-        raise RuntimeError("ECOMAGENT_API_KEY is not configured")
+def call_text_model(prompt: str, model: str | None = None) -> str:
+    if openai_client is None:
+        raise RuntimeError("OPENAI_API_KEY is not configured")
 
-    response = text_client.chat.completions.create(
-        model=model or ECOMAGENT_MODEL,
+    response = openai_client.chat.completions.create(
+        model=model or OPENAI_TEXT_MODEL,
         messages=[{"role": "user", "content": prompt}],
     )
     content = response.choices[0].message.content
@@ -269,7 +285,20 @@ def normalize_html_content(raw_content: str) -> str:
         tag.decompose()
 
     allowed_tags = {
-        "p", "h2", "h3", "ul", "ol", "li", "blockquote", "strong", "em", "b", "i", "a", "br", "img"
+        "p",
+        "h2",
+        "h3",
+        "ul",
+        "ol",
+        "li",
+        "blockquote",
+        "strong",
+        "em",
+        "b",
+        "i",
+        "a",
+        "br",
+        "img",
     }
 
     for tag in soup.find_all(True):
@@ -277,7 +306,7 @@ def normalize_html_content(raw_content: str) -> str:
             tag.unwrap()
             continue
 
-        attrs = {}
+        attrs: dict[str, str] = {}
         if tag.name == "a":
             href = (tag.get("href") or "").strip()
             if is_safe_url(href, allow_relative=True):
@@ -300,14 +329,14 @@ def normalize_html_content(raw_content: str) -> str:
     if not plain:
         return "<p>No content generated.</p>"
 
-    return f"<p>{plain}</p>"
+    return f"<p>{escape(plain)}</p>"
 
 
 def normalize_keywords(raw_keywords: str) -> str:
     raw_keywords = raw_keywords.replace("\n", ",")
     parts = [clean_text(part, max_len=80).strip(",") for part in raw_keywords.split(",")]
-    filtered = []
-    seen = set()
+    filtered: list[str] = []
+    seen: set[str] = set()
 
     for part in parts:
         if not part:
@@ -346,45 +375,127 @@ def generate_excerpt(content_html: str) -> str:
 def parse_numeric_post_id(value) -> int | None:
     if isinstance(value, int):
         return value
-
     if isinstance(value, str):
         if value.startswith("bp") and value[2:].isdigit():
             return int(value[2:])
         if value.isdigit():
             return int(value)
-
     return None
 
 
+def parse_sort_date(value: str | None) -> datetime:
+    if not value:
+        return datetime.min
+
+    for fmt in ("%Y-%m-%d", "%B %d, %Y"):
+        try:
+            return datetime.strptime(value, fmt)
+        except ValueError:
+            continue
+
+    return datetime.min
+
+
+def load_existing_index_posts() -> list[dict]:
+    index_path = LOCAL_BLOG_DIR / "index.json"
+    if not index_path.exists():
+        return []
+
+    try:
+        with open(index_path, "r", encoding="utf-8") as f:
+            payload = json.load(f)
+        if isinstance(payload, list):
+            return payload
+    except Exception:
+        return []
+
+    return []
+
+
+def get_recent_titles(limit: int = 60) -> list[str]:
+    titles: list[str] = []
+
+    for item in load_existing_index_posts():
+        if not isinstance(item, dict):
+            continue
+        title = clean_text(item.get("title", ""), max_len=220).lower()
+        if title:
+            titles.append(title)
+        if len(titles) >= limit:
+            return titles
+
+    for post_file in sorted(LOCAL_BLOG_DIR.glob("*.json"), reverse=True):
+        if post_file.name == "index.json":
+            continue
+        try:
+            with open(post_file, "r", encoding="utf-8") as f:
+                payload = json.load(f)
+            title = clean_text(payload.get("title", ""), max_len=220).lower()
+            if title and title not in titles:
+                titles.append(title)
+        except Exception:
+            continue
+        if len(titles) >= limit:
+            break
+
+    return titles
+
+
+def is_title_similar(candidate_title: str, existing_titles: list[str], threshold: float = 0.88) -> bool:
+    candidate_norm = clean_text(candidate_title, max_len=220).lower()
+    if not candidate_norm:
+        return False
+
+    for existing in existing_titles:
+        similarity = SequenceMatcher(None, candidate_norm, existing).ratio()
+        if similarity >= threshold:
+            return True
+    return False
+
+
 def get_next_post_id() -> str:
-    max_id = 0
+    max_bp_id = 0
+    max_numeric_id = 0
 
     for post_file in LOCAL_BLOG_DIR.glob("*.json"):
         if post_file.name == "index.json":
             continue
 
-        parsed = parse_numeric_post_id(post_file.stem)
-        if parsed:
-            max_id = max(max_id, parsed)
+        stem = post_file.stem
+        if stem.startswith("bp") and stem[2:].isdigit():
+            max_bp_id = max(max_bp_id, int(stem[2:]))
+        else:
+            parsed = parse_numeric_post_id(stem)
+            if parsed:
+                max_numeric_id = max(max_numeric_id, parsed)
 
         try:
             with open(post_file, "r", encoding="utf-8") as f:
                 payload = json.load(f)
-            parsed_payload_id = parse_numeric_post_id(payload.get("id"))
-            if parsed_payload_id:
-                max_id = max(max_id, parsed_payload_id)
+            payload_id = str(payload.get("id", "")).strip()
+            if payload_id.startswith("bp") and payload_id[2:].isdigit():
+                max_bp_id = max(max_bp_id, int(payload_id[2:]))
+            else:
+                parsed_payload_id = parse_numeric_post_id(payload.get("id"))
+                if parsed_payload_id:
+                    max_numeric_id = max(max_numeric_id, parsed_payload_id)
         except Exception:
             continue
 
-    return f"bp{max_id + 1}"
+    if max_bp_id:
+        return f"bp{max_bp_id + 1}"
+
+    return f"bp{max_numeric_id + 1}"
 
 
 def fetch_trucking_articles() -> list[dict]:
     headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-                      "(KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+            "(KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"
+        )
     }
-    articles = []
+    articles: list[dict] = []
 
     for site in TRUCKING_SOURCES:
         try:
@@ -407,19 +518,24 @@ def fetch_trucking_articles() -> list[dict]:
 
                 combined = f"{title} {summary}".lower()
                 if not any(term in combined for term in [
-                    "truck", "trucking", "fleet", "haul", "freight", "driver", "diesel", "transport"
+                    "truck",
+                    "trucking",
+                    "fleet",
+                    "haul",
+                    "freight",
+                    "driver",
+                    "diesel",
+                    "transport",
+                    "logistics",
                 ]):
                     continue
 
-                articles.append({
-                    "title": title,
-                    "summary": summary,
-                })
+                articles.append({"title": title, "summary": summary})
         except Exception as exc:
             log(f"Skipping source {site['url']} due to fetch error: {exc}")
 
-    deduped = []
-    seen_titles = set()
+    deduped: list[dict] = []
+    seen_titles: set[str] = set()
     for article in articles:
         key = article["title"].lower()
         if key in seen_titles:
@@ -434,7 +550,7 @@ def validate_topics(raw_topics) -> list[dict]:
     if not isinstance(raw_topics, list):
         return []
 
-    validated = []
+    validated: list[dict] = []
     for item in raw_topics:
         if not isinstance(item, dict):
             continue
@@ -454,18 +570,14 @@ def validate_topics(raw_topics) -> list[dict]:
             "title": title,
             "summary": summary,
             "relevance": relevance,
+            "category": category or "",
         }
-
-        if category:
-            topic["category"] = category
-
         validated.append(topic)
 
     return validated
 
 
 def get_current_logistics_topics() -> list[dict]:
-    # Attempt 1: scrape current trucking websites + synthesize into topic candidates
     try:
         log("Fetching live trucking/logistics articles...")
         scraped_articles = fetch_trucking_articles()
@@ -474,8 +586,8 @@ def get_current_logistics_topics() -> list[dict]:
             prompt = f"""
 You are assisting a commercial trucking company blog editor.
 
-Using the article list below, generate 5 strong blog topics for fleet operators and logistics managers.
-Use the latest context from the provided list. Return ONLY valid JSON array.
+Using the article list below, generate 7 strong blog topics for fleet operators and logistics managers.
+Use the latest context from the provided list. Return ONLY a valid JSON array.
 
 Required JSON format:
 [
@@ -483,12 +595,18 @@ Required JSON format:
   ...
 ]
 
-Category must be one of these themes: Industry Trends, Fleet Management, Regulations, Fuel Management, Safety, Technology Trends, Driver Retention.
+Category must be one of these themes: Industry Trends, Fleet Management, Regulations, Fuel Management, Safety, Technology Trends, Driver Retention, Supply Chain Management, Economic Outlook, Logistics Insights.
+
+Requirements:
+- Keep topics distinct from each other
+- No invented statistics
+- No fake named experts
+- Focus on topics that would still be useful to fleet operators a few weeks from now
 
 Articles:
 {payload}
 """
-            response_text = call_model(prompt, model=ECOMAGENT_TOPIC_MODEL)
+            response_text = call_text_model(prompt, model=OPENAI_TOPIC_MODEL)
             parsed = parse_json_from_response(response_text)
             topics = validate_topics(parsed)
             if len(topics) >= 3:
@@ -497,59 +615,34 @@ Articles:
     except Exception as exc:
         log(f"Live-source topic generation failed: {exc}")
 
-    # Attempt 2: direct trend generation
     try:
-        log("Generating topical ideas directly from model...")
-        today = datetime.utcnow().strftime("%B %d, %Y")
+        log("Generating fallback topic ideas directly from OpenAI...")
+        today = datetime.now(timezone.utc).strftime("%B %d, %Y")
         prompt = f"""
-Today is {today}. Propose 5 timely blog topics for a semi-truck logistics company.
+Today is {today}. Propose 7 timely blog topics for a semi-truck logistics company.
 
-Return ONLY valid JSON array in this format:
+Return ONLY a valid JSON array in this format:
 [
   {{"title": "...", "summary": "...", "relevance": "...", "category": "..."}},
   ...
 ]
 
 Requirements:
-- Focus on commercial trucking, freight hauling, fleet operations, and compliance
+- Focus on commercial trucking, freight hauling, fleet operations, compliance, driver recruiting, safety, fuel, and logistics technology
 - Keep each summary to 1-2 sentences
-- No invented statistics or fabricated named sources
+- No invented statistics
+- No fake named experts
+- Avoid duplicate or near-duplicate topics
 """
-        response_text = call_model(prompt, model=ECOMAGENT_TOPIC_MODEL)
+        response_text = call_text_model(prompt, model=OPENAI_TOPIC_MODEL)
         parsed = parse_json_from_response(response_text)
         topics = validate_topics(parsed)
         if topics:
-            log(f"Generated {len(topics)} model-based trending topics")
+            log(f"Generated {len(topics)} fallback topics")
             return topics
     except Exception as exc:
-        log(f"Fallback trend generation failed: {exc}")
+        log(f"Fallback topic generation failed: {exc}")
 
-    # Attempt 3: category-based synthetic fallback
-    log("Using category-based fallback topics")
-    selected_categories = random.sample(BLOG_CATEGORIES, min(5, len(BLOG_CATEGORIES)))
-    generated = []
-
-    for category in selected_categories:
-        try:
-            prompt = f"""
-Create one blog topic for a commercial trucking company in category "{category}".
-Return ONLY valid JSON object with keys: title, summary, relevance, category.
-No markdown.
-"""
-            response_text = call_model(prompt, model=ECOMAGENT_TOPIC_MODEL)
-            parsed = parse_json_from_response(response_text)
-            if isinstance(parsed, dict):
-                parsed["category"] = clean_text(parsed.get("category") or category, max_len=60)
-                validated = validate_topics([parsed])
-                if validated:
-                    generated.extend(validated)
-        except Exception:
-            continue
-
-    if generated:
-        return generated
-
-    # Hard fallback
     return [
         {
             "title": "Fleet Uptime Strategies for 2026: Reducing Unplanned Downtime",
@@ -569,33 +662,142 @@ No markdown.
             "relevance": "Fuel is one of the largest variable costs in trucking operations.",
             "category": "Fuel Management",
         },
+        {
+            "title": "Retaining Drivers in 2026: What Fleets Can Improve Beyond Pay",
+            "summary": "Driver experience, dispatch clarity, and equipment quality all affect retention outcomes.",
+            "relevance": "Driver turnover creates recruiting costs and service disruption.",
+            "category": "Driver Retention",
+        },
+        {
+            "title": "What Dispatch Teams Can Automate Without Losing Operational Control",
+            "summary": "A practical look at which dispatch tasks benefit most from automation and where people still matter most.",
+            "relevance": "Technology investment is only valuable when it improves execution and customer service.",
+            "category": "Technology Trends",
+        },
     ]
 
 
-def get_relevant_image(topic: dict) -> tuple[str, str]:
-    if image_client is None:
-        raise RuntimeError("OPENAI_API_KEY is not configured for image generation")
+def choose_category_for_topic(topic: dict) -> str:
+    category = clean_text(topic.get("category", ""), max_len=60)
+    if category:
+        return category
 
-    if not REQUIRE_IMAGE_GENERATION:
-        raise RuntimeError("REQUIRE_IMAGE_GENERATION is false; strict image mode requires true")
+    text = f"{topic.get('title', '')} {topic.get('summary', '')}".lower()
+    keyword_map = {
+        "Regulations": ["regulation", "compliance", "fmcsa", "dot", "mandate"],
+        "Fuel Management": ["fuel", "diesel", "efficiency", "mileage"],
+        "Safety": ["safety", "accident", "incident", "risk"],
+        "Technology Trends": ["technology", "ai", "telematics", "automation", "software"],
+        "Driver Retention": ["driver", "retention", "recruit", "wellness"],
+        "Fleet Management": ["fleet", "maintenance", "uptime", "dispatch"],
+        "Industry Trends": ["market", "trend", "economy", "demand", "outlook"],
+        "Supply Chain Management": ["supply chain", "shipper", "warehouse", "inventory"],
+        "Economic Outlook": ["rates", "inflation", "economy", "costs", "pricing"],
+        "Logistics Insights": ["logistics", "operations", "shipping", "delivery"],
+    }
 
-    prompt = call_model(
-        f"""
-Create a short, visual image prompt for a blog post cover image.
+    best_category = "Fleet Management"
+    best_score = -1
+    for candidate, keywords in keyword_map.items():
+        score = sum(text.count(keyword) for keyword in keywords)
+        if score > best_score:
+            best_score = score
+            best_category = candidate
+
+    return best_category
+
+
+def generate_meta_description(title: str) -> str:
+    prompt = f"""
+Write one SEO meta description for this trucking/logistics blog title:
+"{title}"
+
+Requirements:
+- Max 155 characters
+- Audience: fleet operators, dispatchers, and logistics managers
+- Plain text only
+- No hashtags
+- No quotation marks
+- No markdown
+"""
+    response = call_text_model(prompt, model=OPENAI_TEXT_MODEL)
+    description = clean_text(response, max_len=155).strip("\"'")
+    return description or "Trucking and logistics insights for fleet operators and transportation teams."
+
+
+def generate_keywords(title: str) -> str:
+    prompt = f"""
+Generate 5-7 SEO keywords for this blog title:
+"{title}"
+
+Return only a comma-separated list. No numbering. No hashtags.
+"""
+    response = call_text_model(prompt, model=OPENAI_TEXT_MODEL)
+    return normalize_keywords(response)
+
+
+def generate_post_content(topic: dict, category: str, post_date_display: str, keywords: str) -> str:
+    prompt = f"""
+Write a detailed blog post for Pro Truck Logistics.
+
+Title: {topic.get('title', '')}
+Context: {topic.get('summary', '')}
+Industry relevance: {topic.get('relevance', '')}
+Category: {category}
+Date: {post_date_display}
+Target keywords: {keywords}
+
+Requirements:
+- Audience: fleet operators, dispatchers, logistics managers, and drivers
+- 1 short introduction + 3 or 4 body sections + practical conclusion
+- Use practical, actionable guidance
+- No fabricated statistics
+- No fake named experts
+- If data is uncertain, phrase it carefully in general terms
+- Keep the tone professional and useful, not fluffy
+- OUTPUT ONLY AN HTML FRAGMENT
+- Do not include <!DOCTYPE>, <html>, <head>, or <body>
+- Allowed tags: <p>, <h2>, <h3>, <ul>, <ol>, <li>, <blockquote>, <strong>, <em>, <a>
+"""
+    raw_content = call_text_model(prompt, model=OPENAI_TEXT_MODEL)
+    return normalize_html_content(raw_content)
+
+
+def get_cover_image_prompt(topic: dict) -> str:
+    prompt = f"""
+Create a concise image-generation prompt for a blog post cover image.
+
 Topic title: {topic.get('title', '')}
 Summary: {topic.get('summary', '')}
 
-Return only the prompt text. Keep it under 120 words and focused on commercial trucking.
-""",
-        model=ECOMAGENT_MODEL,
-    )
-    prompt = clean_text(prompt, max_len=700)
+Requirements:
+- Commercial trucking or freight logistics context
+- Editorial style
+- No text overlays
+- No logos
+- No watermarks
+- Under 120 words
 
-    response = image_client.images.generate(
-        model=OPENAI_IMAGE_MODEL,
-        prompt=prompt,
-        size=OPENAI_IMAGE_SIZE,
-    )
+Return only the prompt text.
+"""
+    return clean_text(call_text_model(prompt, model=OPENAI_TEXT_MODEL), max_len=700)
+
+
+def get_relevant_image(topic: dict) -> tuple[str, str]:
+    if openai_client is None:
+        raise RuntimeError("OPENAI_API_KEY is not configured")
+
+    if not REQUIRE_IMAGE_GENERATION:
+        raise RuntimeError("REQUIRE_IMAGE_GENERATION is false; image generation is required by this workflow")
+
+    prompt = get_cover_image_prompt(topic)
+    image_request = {
+        "model": OPENAI_IMAGE_MODEL,
+        "prompt": prompt,
+        "size": OPENAI_IMAGE_SIZE,
+        "quality": OPENAI_IMAGE_QUALITY,
+    }
+    response = openai_client.images.generate(**image_request)
 
     image_url = ""
     if getattr(response, "data", None):
@@ -623,7 +825,6 @@ def download_and_save_image(image_url: str, post_id: str) -> str:
     local_filename = f"{post_id}-image.png"
     local_path = IMAGES_DIR / local_filename
 
-    # Support local temporary file path produced from b64 payload
     candidate_local = Path(image_url)
     if candidate_local.exists() and candidate_local.is_file():
         image = Image.open(candidate_local).convert("RGB")
@@ -643,150 +844,16 @@ def download_and_save_image(image_url: str, post_id: str) -> str:
     return f"images/{local_filename}"
 
 
-def choose_category_for_topic(topic: dict) -> str:
-    if topic.get("category"):
-        return clean_text(topic["category"], max_len=60)
-
-    text = f"{topic.get('title', '')} {topic.get('summary', '')}".lower()
-
-    keyword_map = {
-        "Regulations": ["regulation", "compliance", "fmcsa", "dot", "mandate"],
-        "Fuel Management": ["fuel", "diesel", "efficiency", "mileage"],
-        "Safety": ["safety", "accident", "incident", "risk"],
-        "Technology Trends": ["technology", "ai", "telematics", "automation", "software"],
-        "Driver Retention": ["driver", "retention", "recruit", "wellness"],
-        "Fleet Management": ["fleet", "maintenance", "uptime", "dispatch"],
-        "Industry Trends": ["market", "trend", "economy", "demand", "outlook"],
-    }
-
-    best_category = "Fleet Management"
-    best_score = -1
-    for category, keywords in keyword_map.items():
-        score = sum(text.count(keyword) for keyword in keywords)
-        if score > best_score:
-            best_score = score
-            best_category = category
-
-    return best_category
-
-
-def generate_meta_description(title: str) -> str:
-    prompt = f"""
-Write one SEO meta description (max 155 chars) for this logistics blog title:
-"{title}"
-
-Requirements:
-- Audience: fleet operators and logistics managers
-- Mention trucking/logistics context naturally
-- Return plain text only (no hashtags, no quotes, no markdown)
-"""
-
-    response = call_model(prompt, model=ECOMAGENT_MODEL)
-    description = clean_text(response, max_len=155)
-    return description or "Trucking and logistics insights for fleet operators and transportation teams."
-
-
-def generate_keywords(title: str) -> str:
-    prompt = f"""
-Generate 5-7 SEO keywords for this blog title:
-"{title}"
-
-Return only comma-separated keywords. No numbering.
-"""
-
-    response = call_model(prompt, model=ECOMAGENT_MODEL)
-    return normalize_keywords(response)
-
-
-def generate_post_content(topic: dict, category: str, post_date_display: str, keywords: str) -> str:
-    prompt = f"""
-Write a detailed blog post for Pro Truck Logistics.
-
-Title: {topic.get('title', '')}
-Context: {topic.get('summary', '')}
-Industry relevance: {topic.get('relevance', '')}
-Category: {category}
-Date: {post_date_display}
-Target keywords: {keywords}
-
-Requirements:
-- Audience: fleet operators, dispatchers, logistics managers, and drivers
-- 1 intro + 3-4 body sections + practical conclusion
-- Use practical, actionable guidance
-- No fabricated statistics and no fake named experts
-- If data is uncertain, say so in general terms
-- OUTPUT ONLY HTML FRAGMENT (no <!DOCTYPE>, no <html>, no <head>, no <body>)
-- Allowed tags: <p>, <h2>, <h3>, <ul>, <ol>, <li>, <blockquote>, <strong>, <em>, <a>
-"""
-
-    raw_content = call_model(prompt, model=ECOMAGENT_MODEL)
-    return normalize_html_content(raw_content)
-
-
-def build_absolute_blog_url(path: str) -> str:
-    if is_safe_url(path):
-        parsed = urlparse(path)
-        if parsed.scheme in {"http", "https"}:
-            return path
-
-    trimmed = (path or "").lstrip("/")
-    if trimmed.startswith("blog-posts/"):
-        return f"{SITE_BASE_URL}/{trimmed}"
-
-    return f"{SITE_BASE_URL}/blog-posts/{trimmed}"
-
-
-def is_topic_too_similar(candidate_title: str) -> bool:
-    index_path = LOCAL_BLOG_DIR / "index.json"
-    if not index_path.exists():
-        return False
-
-    try:
-        with open(index_path, "r", encoding="utf-8") as f:
-            payload = json.load(f)
-    except Exception:
-        return False
-
-    if not isinstance(payload, list):
-        return False
-
-    candidate_norm = clean_text(candidate_title, max_len=220).lower()
-    if not candidate_norm:
-        return False
-
-    recent_titles = []
-    for item in payload:
-        if not isinstance(item, dict):
-            continue
-        title = clean_text(str(item.get("title", "")), max_len=220).lower()
-        if title:
-            recent_titles.append(title)
-        if len(recent_titles) >= 30:
-            break
-
-    for existing in recent_titles:
-        similarity = SequenceMatcher(None, candidate_norm, existing).ratio()
-        if similarity >= 0.9:
-            return True
-
-    return False
-
-
 def generate_blog_post(topic: dict) -> dict:
     title = clean_text(topic.get("title", ""), max_len=180)
     if not title:
         raise ValueError("Topic missing title")
 
-    if is_topic_too_similar(title):
-        raise ValueError(f"Topic too similar to recent posts: {title}")
-
-    log(f"Generating blog post: {title}")
-
     author = random.choice(AUTHORS)
     category = choose_category_for_topic(topic)
     post_id = get_next_post_id()
 
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     post_date_display = now.strftime("%B %d, %Y")
     sort_date = now.strftime("%Y-%m-%d")
 
@@ -823,20 +890,22 @@ def generate_blog_post(topic: dict) -> dict:
 
 
 def save_blog_post(post: dict) -> Path:
-    post_id = post["id"]
-    file_path = LOCAL_BLOG_DIR / f"{post_id}.json"
-
+    file_path = LOCAL_BLOG_DIR / f"{post['id']}.json"
     with open(file_path, "w", encoding="utf-8") as f:
         json.dump(post, f, ensure_ascii=False, indent=2)
-
     log(f"Saved JSON post: {file_path}")
     return file_path
 
 
-def update_meta_tag(soup: BeautifulSoup, *, meta_id: str | None = None, name: str | None = None,
-                    property_name: str | None = None, content: str = "") -> None:
+def update_meta_tag(
+    soup: BeautifulSoup,
+    *,
+    meta_id: str | None = None,
+    name: str | None = None,
+    property_name: str | None = None,
+    content: str = "",
+) -> None:
     target = None
-
     if meta_id:
         target = soup.find("meta", id=meta_id)
     if target is None and name:
@@ -854,9 +923,21 @@ def set_text_by_id(soup: BeautifulSoup, element_id: str, value: str) -> None:
     element = soup.find(id=element_id)
     if element is None:
         return
-
     element.clear()
     element.append(clean_text(value))
+
+
+def build_absolute_blog_url(path: str) -> str:
+    if is_safe_url(path):
+        parsed = urlparse(path)
+        if parsed.scheme in {"http", "https"}:
+            return path
+
+    trimmed = (path or "").lstrip("/")
+    if trimmed.startswith("blog-posts/"):
+        return f"{SITE_BASE_URL}/{trimmed}"
+
+    return f"{SITE_BASE_URL}/blog-posts/{trimmed}"
 
 
 def create_blog_post_html(post: dict) -> Path:
@@ -867,7 +948,6 @@ def create_blog_post_html(post: dict) -> Path:
         soup = BeautifulSoup(f.read(), "html.parser")
 
     includes_href = env_value("BLOG_INCLUDES_HREF", "../includes.html")
-
     post_id = post["id"]
     post_url = f"{SITE_BASE_URL}/blog-posts/post-{post_id}.html"
     image_absolute_url = build_absolute_blog_url(post["image"])
@@ -876,15 +956,23 @@ def create_blog_post_html(post: dict) -> Path:
     if image_for_header.startswith("blog-posts/"):
         image_for_header = image_for_header[len("blog-posts/"):]
 
-    # Document title
     if soup.title:
         soup.title.string = f"{clean_text(post['title'])} | Pro Truck Logistics"
 
-    # Meta and OG tags
     update_meta_tag(soup, meta_id="meta-description", name="description", content=post["meta"]["description"])
     update_meta_tag(soup, meta_id="meta-keywords", name="keywords", content=post["meta"]["keywords"])
-    update_meta_tag(soup, meta_id="og-title", property_name="og:title", content=f"{post['title']} | Pro Truck Logistics")
-    update_meta_tag(soup, meta_id="og-description", property_name="og:description", content=post["meta"]["description"])
+    update_meta_tag(
+        soup,
+        meta_id="og-title",
+        property_name="og:title",
+        content=f"{post['title']} | Pro Truck Logistics",
+    )
+    update_meta_tag(
+        soup,
+        meta_id="og-description",
+        property_name="og:description",
+        content=post["meta"]["description"],
+    )
     update_meta_tag(soup, meta_id="og-image", property_name="og:image", content=image_absolute_url)
     update_meta_tag(soup, property_name="og:url", content=post_url)
 
@@ -898,17 +986,14 @@ def create_blog_post_html(post: dict) -> Path:
     elif canonical_link is not None:
         canonical_link["href"] = post_url
 
-    # Shared includes fetch path alignment with hosting layout
     for script in soup.find_all("script"):
         script_text = script.string
         if not script_text:
             continue
-
         updated_script_text = script_text.replace("../blog-includes.html", includes_href)
         if updated_script_text != script_text:
             script.string = updated_script_text
 
-    # Header and core fields
     header = soup.find(id="post-header")
     if header is not None:
         header["style"] = (
@@ -922,7 +1007,6 @@ def create_blog_post_html(post: dict) -> Path:
     set_text_by_id(soup, "post-author", post["author"])
     set_text_by_id(soup, "post-read-time", post["read_time"])
 
-    # Content insertion (already sanitized fragment)
     post_content_container = soup.find(id="post-content")
     if post_content_container is not None:
         post_content_container.clear()
@@ -930,7 +1014,6 @@ def create_blog_post_html(post: dict) -> Path:
         for child in list(fragment.contents):
             post_content_container.append(child)
 
-    # Author block
     author_img = soup.find(id="author-image")
     if author_img is not None:
         author_img["src"] = post["author_image"]
@@ -940,7 +1023,6 @@ def create_blog_post_html(post: dict) -> Path:
     set_text_by_id(soup, "author-position", post["author_position"])
     set_text_by_id(soup, "author-bio", post["author_bio"])
 
-    # Share links
     encoded_post_url = quote(post_url, safe="")
     encoded_title = quote(post["title"], safe="")
     email_subject = quote(post["title"], safe="")
@@ -957,13 +1039,11 @@ def create_blog_post_html(post: dict) -> Path:
         anchor = soup.select_one(f"a.share-button.{channel}")
         if anchor is None:
             continue
-
         anchor["href"] = href
         if channel != "email":
             anchor["target"] = "_blank"
             anchor["rel"] = "noopener noreferrer"
 
-    # Schema
     schema_script = soup.find("script", id="article-schema")
     if schema_script is not None:
         schema_data = {
@@ -994,7 +1074,6 @@ def create_blog_post_html(post: dict) -> Path:
             "keywords": post["meta"]["keywords"],
             "articleSection": post["category"],
         }
-
         schema_script.string = "\n" + json.dumps(schema_data, indent=2) + "\n"
 
     html_path = LOCAL_BLOG_DIR / f"post-{post_id}.html"
@@ -1005,33 +1084,11 @@ def create_blog_post_html(post: dict) -> Path:
     return html_path
 
 
-def parse_sort_date(value: str | None) -> datetime:
-    if not value:
-        return datetime.min
-
-    for fmt in ("%Y-%m-%d", "%B %d, %Y"):
-        try:
-            return datetime.strptime(value, fmt)
-        except ValueError:
-            continue
-
-    return datetime.min
-
-
 def update_blog_index(new_posts: list[dict]) -> Path:
     index_path = LOCAL_BLOG_DIR / "index.json"
-    existing_posts = []
+    existing_posts = load_existing_index_posts()
 
-    if index_path.exists():
-        try:
-            with open(index_path, "r", encoding="utf-8") as f:
-                payload = json.load(f)
-            if isinstance(payload, list):
-                existing_posts = payload
-        except Exception:
-            existing_posts = []
-
-    posts_by_id = {}
+    posts_by_id: dict[str, dict] = {}
     for post in existing_posts:
         if isinstance(post, dict) and "id" in post:
             posts_by_id[str(post["id"])] = post
@@ -1041,7 +1098,7 @@ def update_blog_index(new_posts: list[dict]) -> Path:
         if image_path.startswith("images/"):
             image_path = f"blog-posts/{image_path}"
 
-        index_post = {
+        posts_by_id[str(post["id"])] = {
             "id": post["id"],
             "title": post["title"],
             "excerpt": post["excerpt"],
@@ -1052,16 +1109,12 @@ def update_blog_index(new_posts: list[dict]) -> Path:
             "read_time": post["read_time"],
             "image": image_path,
         }
-        posts_by_id[str(post["id"])] = index_post
 
     all_posts = list(posts_by_id.values())
-
-    def sort_key(item: dict):
-        sort_date = parse_sort_date(item.get("sort_date") or item.get("date"))
-        numeric_id = parse_numeric_post_id(item.get("id")) or 0
-        return sort_date, numeric_id
-
-    all_posts.sort(key=sort_key, reverse=True)
+    all_posts.sort(
+        key=lambda item: (parse_sort_date(item.get("sort_date") or item.get("date")), parse_numeric_post_id(item.get("id")) or 0),
+        reverse=True,
+    )
 
     with open(index_path, "w", encoding="utf-8") as f:
         json.dump(all_posts, f, ensure_ascii=False, indent=2)
@@ -1070,21 +1123,150 @@ def update_blog_index(new_posts: list[dict]) -> Path:
     return index_path
 
 
-def upload_files_to_server() -> bool:
+def load_existing_sitemap_lastmods(sitemap_path: Path) -> dict[str, str]:
+    if not sitemap_path.exists():
+        return {}
+
+    try:
+        tree = ET.parse(sitemap_path)
+    except ET.ParseError:
+        return {}
+
+    namespace = {"sm": "http://www.sitemaps.org/schemas/sitemap/0.9"}
+    lastmods: dict[str, str] = {}
+    for url_node in tree.findall("sm:url", namespace):
+        loc_node = url_node.find("sm:loc", namespace)
+        lastmod_node = url_node.find("sm:lastmod", namespace)
+        if loc_node is None or lastmod_node is None:
+            continue
+        loc_text = clean_text(loc_node.text)
+        lastmod_text = clean_text(lastmod_node.text)
+        if loc_text and lastmod_text:
+            lastmods[loc_text] = lastmod_text
+    return lastmods
+
+
+def generate_rss_feed(posts: list[dict]) -> Path:
+    items: list[str] = []
+
+    for post in posts[:50]:
+        post_id = post.get("id")
+        if not post_id:
+            continue
+
+        post_url = f"{SITE_BASE_URL}/blog-posts/post-{post_id}.html"
+        sort_date = parse_sort_date(post.get("sort_date") or post.get("date"))
+        if sort_date == datetime.min:
+            sort_date = datetime.now(timezone.utc)
+        pub_date = sort_date.strftime("%a, %d %b %Y 00:00:00 +0000")
+        title = escape(clean_text(post.get("title", "Untitled Post")))
+        description = escape(clean_text(post.get("excerpt", post.get("title", "")), max_len=300))
+
+        items.append(
+            "    <item>\n"
+            f"      <title>{title}</title>\n"
+            f"      <link>{post_url}</link>\n"
+            f"      <guid>{post_url}</guid>\n"
+            f"      <pubDate>{pub_date}</pubDate>\n"
+            f"      <description>{description}</description>\n"
+            "    </item>"
+        )
+
+    rss_content = (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        "<rss version=\"2.0\">\n"
+        "  <channel>\n"
+        "    <title>Pro Truck Logistics Blog</title>\n"
+        f"    <link>{SITE_BASE_URL}/blog.html</link>\n"
+        "    <description>Industry news, trends, and expert advice from Pro Truck Logistics.</description>\n"
+        "    <language>en-us</language>\n"
+        + "\n".join(items)
+        + "\n  </channel>\n"
+        "</rss>\n"
+    )
+
+    RSS_PATH.write_text(rss_content, encoding="utf-8")
+    log(f"Updated RSS feed: {RSS_PATH}")
+    return RSS_PATH
+
+
+def generate_sitemap(posts: list[dict]) -> Path:
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    existing_lastmods = load_existing_sitemap_lastmods(SITEMAP_PATH)
+    urls: list[tuple[str, str]] = []
+
+    for page in STATIC_SITEMAP_PAGES:
+        loc = f"{SITE_BASE_URL}/{page}"
+        lastmod = existing_lastmods.get(loc, today)
+        urls.append((loc, lastmod))
+
+    for post in posts:
+        post_id = post.get("id")
+        if not post_id:
+            continue
+        loc = f"{SITE_BASE_URL}/blog-posts/post-{post_id}.html"
+        lastmod = clean_text(post.get("sort_date") or "", max_len=20)
+        if not lastmod:
+            parsed = parse_sort_date(post.get("date"))
+            lastmod = parsed.strftime("%Y-%m-%d") if parsed != datetime.min else today
+        urls.append((loc, lastmod))
+
+    sitemap_parts = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    ]
+    for loc, lastmod in urls:
+        sitemap_parts.extend([
+            "  <url>",
+            f"    <loc>{escape(loc)}</loc>",
+            f"    <lastmod>{escape(lastmod)}</lastmod>",
+            "  </url>",
+        ])
+    sitemap_parts.append("</urlset>")
+    sitemap_parts.append("")
+
+    SITEMAP_PATH.write_text("\n".join(sitemap_parts), encoding="utf-8")
+    log(f"Updated sitemap: {SITEMAP_PATH}")
+    return SITEMAP_PATH
+
+
+def ensure_remote_dir_sftp(sftp: paramiko.SFTPClient, path: str) -> None:
+    normalized = (path or "/").strip()
+    if not normalized.startswith("/"):
+        normalized = "/" + normalized
+
+    if normalized == "/":
+        return
+
+    try:
+        sftp.stat(normalized)
+        return
+    except FileNotFoundError:
+        pass
+
+    current = ""
+    for part in normalized.strip("/").split("/"):
+        current += f"/{part}"
+        try:
+            sftp.stat(current)
+        except FileNotFoundError:
+            sftp.mkdir(current)
+
+
+def upload_files_to_server(blog_files: list[Path], image_files: list[Path], root_files: list[Path]) -> bool:
     if SKIP_UPLOAD:
         log("SKIP_UPLOAD=true, skipping upload phase")
         return True
 
     if FTP_IS_SFTP:
-        return upload_files_via_sftp()
+        return upload_files_via_sftp(blog_files, image_files, root_files)
 
-    return upload_files_via_ftp()
+    return upload_files_via_ftp(blog_files, image_files, root_files)
 
 
-def upload_files_via_sftp() -> bool:
+def upload_files_via_sftp(blog_files: list[Path], image_files: list[Path], root_files: list[Path]) -> bool:
     try:
         ssh = paramiko.SSHClient()
-
         if SFTP_STRICT_HOST_KEY:
             ssh.load_system_host_keys()
             if SFTP_KNOWN_HOSTS:
@@ -1100,36 +1282,24 @@ def upload_files_via_sftp() -> bool:
         ssh.connect(hostname=FTP_HOST, username=FTP_USER, password=FTP_PASS, timeout=20)
         sftp = ssh.open_sftp()
 
-        try:
-            sftp.stat(FTP_BLOG_DIR)
-        except FileNotFoundError:
-            path_parts = FTP_BLOG_DIR.strip("/").split("/")
-            current = ""
-            for part in path_parts:
-                current += f"/{part}"
-                try:
-                    sftp.stat(current)
-                except FileNotFoundError:
-                    sftp.mkdir(current)
+        ensure_remote_dir_sftp(sftp, FTP_BLOG_DIR)
+        ensure_remote_dir_sftp(sftp, f"{FTP_BLOG_DIR.rstrip('/')}/images")
+        ensure_remote_dir_sftp(sftp, FTP_SITE_ROOT_DIR)
 
-        remote_images_path = f"{FTP_BLOG_DIR.rstrip('/')}/images"
-        try:
-            sftp.stat(remote_images_path)
-        except FileNotFoundError:
-            sftp.mkdir(remote_images_path)
-
-        regular_files = list(LOCAL_BLOG_DIR.glob("*.json")) + list(LOCAL_BLOG_DIR.glob("*.html"))
-        image_files = list(IMAGES_DIR.glob("*.*"))
-
-        for file_path in regular_files:
+        for file_path in blog_files:
             remote_path = f"{FTP_BLOG_DIR.rstrip('/')}/{file_path.name}"
             sftp.put(str(file_path), remote_path)
             log(f"Uploaded {file_path.name}")
 
         for image_path in image_files:
-            remote_path = f"{remote_images_path}/{image_path.name}"
+            remote_path = f"{FTP_BLOG_DIR.rstrip('/')}/images/{image_path.name}"
             sftp.put(str(image_path), remote_path)
             log(f"Uploaded image {image_path.name}")
+
+        for root_path in root_files:
+            remote_path = f"{FTP_SITE_ROOT_DIR.rstrip('/')}/{root_path.name}" if FTP_SITE_ROOT_DIR != "/" else f"/{root_path.name}"
+            sftp.put(str(root_path), remote_path)
+            log(f"Uploaded root file {root_path.name}")
 
         sftp.close()
         ssh.close()
@@ -1140,42 +1310,54 @@ def upload_files_via_sftp() -> bool:
         return False
 
 
-def upload_files_via_ftp() -> bool:
+def ensure_remote_dir_ftp(ftp: ftplib.FTP, path: str) -> None:
+    normalized = (path or "/").strip()
+    if not normalized:
+        return
+    if not normalized.startswith("/"):
+        normalized = "/" + normalized
+
+    parts = normalized.strip("/").split("/")
+    if parts == [""]:
+        return
+
+    current = ""
+    for part in parts:
+        current += f"/{part}"
+        try:
+            ftp.cwd(current)
+        except ftplib.error_perm:
+            ftp.mkd(current)
+            ftp.cwd(current)
+
+
+def upload_files_via_ftp(blog_files: list[Path], image_files: list[Path], root_files: list[Path]) -> bool:
     try:
         log(f"Connecting to FTP host {FTP_HOST}...")
         with ftplib.FTP(FTP_HOST, FTP_USER, FTP_PASS) as ftp:
-            try:
+            ftp.encoding = "utf-8"
+            ensure_remote_dir_ftp(ftp, FTP_BLOG_DIR)
+            ensure_remote_dir_ftp(ftp, f"{FTP_BLOG_DIR.rstrip('/')}/images")
+            ensure_remote_dir_ftp(ftp, FTP_SITE_ROOT_DIR)
+
+            for file_path in blog_files:
                 ftp.cwd(FTP_BLOG_DIR)
-            except ftplib.error_perm:
-                path_parts = FTP_BLOG_DIR.strip("/").split("/")
-                for i in range(len(path_parts)):
-                    segment = "/" + "/".join(path_parts[: i + 1])
-                    try:
-                        ftp.cwd(segment)
-                    except ftplib.error_perm:
-                        ftp.mkd(segment)
-                        ftp.cwd(segment)
-
-            try:
-                ftp.cwd("images")
-                ftp.cwd("..")
-            except ftplib.error_perm:
-                ftp.mkd("images")
-
-            regular_files = list(LOCAL_BLOG_DIR.glob("*.json")) + list(LOCAL_BLOG_DIR.glob("*.html"))
-            image_files = list(IMAGES_DIR.glob("*.*"))
-
-            for file_path in regular_files:
                 with open(file_path, "rb") as fp:
                     ftp.storbinary(f"STOR {file_path.name}", fp)
                 log(f"Uploaded {file_path.name}")
 
             if image_files:
-                ftp.cwd("images")
+                ftp.cwd(f"{FTP_BLOG_DIR.rstrip('/')}/images")
                 for image_path in image_files:
                     with open(image_path, "rb") as fp:
                         ftp.storbinary(f"STOR {image_path.name}", fp)
                     log(f"Uploaded image {image_path.name}")
+
+            for root_path in root_files:
+                ftp.cwd(FTP_SITE_ROOT_DIR)
+                with open(root_path, "rb") as fp:
+                    ftp.storbinary(f"STOR {root_path.name}", fp)
+                log(f"Uploaded root file {root_path.name}")
 
         log("FTP upload completed")
         return True
@@ -1185,8 +1367,8 @@ def upload_files_via_ftp() -> bool:
 
 
 def validate_runtime_configuration() -> None:
-    if not ECOMAGENT_API_KEY:
-        raise RuntimeError("Missing ECOMAGENT_API_KEY (or OPENAI_API_KEY fallback)")
+    if not OPENAI_API_KEY:
+        raise RuntimeError("Missing OPENAI_API_KEY")
 
     if REQUIRE_IMAGE_GENERATION and not OPENAI_API_KEY:
         raise RuntimeError("Missing OPENAI_API_KEY for required image generation")
@@ -1200,7 +1382,6 @@ def validate_runtime_configuration() -> None:
             "FTP_USER": FTP_USER,
             "FTP_PASS": FTP_PASS,
         }.items() if not value]
-
         if missing:
             raise RuntimeError(f"Missing upload env vars: {', '.join(missing)}")
 
@@ -1208,39 +1389,90 @@ def validate_runtime_configuration() -> None:
         raise RuntimeError("SITE_BASE_URL must use https://")
 
 
+def build_upload_manifest(generated_posts: list[dict], index_path: Path, rss_path: Path, sitemap_path: Path) -> tuple[list[Path], list[Path], list[Path]]:
+    blog_files: list[Path] = [index_path]
+    image_files: list[Path] = []
+    root_files: list[Path] = [rss_path, sitemap_path]
+
+    seen_blog_files: set[Path] = {index_path}
+    seen_image_files: set[Path] = set()
+
+    for post in generated_posts:
+        json_path = LOCAL_BLOG_DIR / f"{post['id']}.json"
+        html_path = LOCAL_BLOG_DIR / f"post-{post['id']}.html"
+        image_name = Path(post["image"]).name
+        image_path = IMAGES_DIR / image_name
+
+        for path in (json_path, html_path):
+            if path not in seen_blog_files:
+                blog_files.append(path)
+                seen_blog_files.add(path)
+
+        if image_path.exists() and image_path not in seen_image_files:
+            image_files.append(image_path)
+            seen_image_files.add(image_path)
+
+    return blog_files, image_files, root_files
+
+
 def main() -> None:
     validate_runtime_configuration()
 
     log("Starting Pro Truck Logistics blog generation")
-    log(f"Using provider base URL: {ECOMAGENT_BASE_URL}")
-    log(f"Using model: {ECOMAGENT_MODEL}")
+    log(f"Using OpenAI base URL: {OPENAI_BASE_URL}")
+    log(f"Using text model: {OPENAI_TEXT_MODEL}")
+    log(f"Using topic model: {OPENAI_TOPIC_MODEL}")
+    log(f"Using image model: {OPENAI_IMAGE_MODEL} ({OPENAI_IMAGE_QUALITY}, {OPENAI_IMAGE_SIZE})")
+    log(f"Posts to generate this run: {POSTS_TO_GENERATE}")
+    log(f"Upload mode: {'SFTP' if FTP_IS_SFTP else 'FTP'}")
 
     topics = get_current_logistics_topics()
     if not topics:
         raise RuntimeError("No topics generated")
 
-    selected_topics = random.sample(topics, min(POSTS_TO_GENERATE, len(topics)))
-    log(f"Selected {len(selected_topics)} topic(s)")
+    random.shuffle(topics)
+    recent_titles = get_recent_titles()
+    reserved_titles: list[str] = []
+    generated_posts: list[dict] = []
 
-    generated_posts = []
-    for topic in selected_topics:
+    for topic in topics:
+        title = clean_text(topic.get("title", ""), max_len=220)
+        if not title:
+            continue
+
+        compare_titles = recent_titles + reserved_titles
+        if is_title_similar(title, compare_titles):
+            log(f"Skipping near-duplicate topic: {title}")
+            continue
+
         try:
             post = generate_blog_post(topic)
-        except ValueError as exc:
-            log(f"Skipping topic: {exc}")
+        except Exception as exc:
+            log(f"Skipping topic due to generation error: {title} ({exc})")
             continue
 
         save_blog_post(post)
         create_blog_post_html(post)
         generated_posts.append(post)
+        reserved_titles.append(clean_text(post["title"], max_len=220).lower())
         log(f"Completed post: {post['title']}")
+
+        if len(generated_posts) >= POSTS_TO_GENERATE:
+            break
 
     if not generated_posts:
         raise RuntimeError("No posts were generated")
 
-    update_blog_index(generated_posts)
+    if len(generated_posts) < POSTS_TO_GENERATE:
+        log(f"Warning: generated {len(generated_posts)} post(s), below requested count of {POSTS_TO_GENERATE}")
 
-    if not upload_files_to_server():
+    index_path = update_blog_index(generated_posts)
+    updated_posts = load_existing_index_posts()
+    rss_path = generate_rss_feed(updated_posts)
+    sitemap_path = generate_sitemap(updated_posts)
+
+    blog_files, image_files, root_files = build_upload_manifest(generated_posts, index_path, rss_path, sitemap_path)
+    if not upload_files_to_server(blog_files, image_files, root_files):
         raise RuntimeError("Upload failed")
 
     log("Blog generation pipeline completed successfully")

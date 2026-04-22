@@ -1,5 +1,8 @@
 name: Generate Blog Posts
 
+permissions:
+  contents: write
+
 on:
   schedule:
     - cron: '0 8 * * *'  # Runs at 8 AM UTC every day
@@ -23,19 +26,18 @@ jobs:
           
       - name: Generate and upload blog posts
         env:
-          ECOMAGENT_API_KEY: ${{ secrets.ECOMAGENT_API_KEY }}
-          ECOMAGENT_BASE_URL: ${{ vars.ECOMAGENT_BASE_URL }}
-          ECOMAGENT_MODEL: ${{ vars.ECOMAGENT_MODEL }}
-          ECOMAGENT_TOPIC_MODEL: ${{ vars.ECOMAGENT_TOPIC_MODEL }}
-
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_BASE_URL: ${{ vars.OPENAI_BASE_URL }}
-          OPENAI_IMAGE_MODEL: ${{ vars.OPENAI_IMAGE_MODEL || 'gpt-image-1' }}
+          OPENAI_TEXT_MODEL: ${{ vars.OPENAI_TEXT_MODEL || 'gpt-5.4-mini' }}
+          OPENAI_TOPIC_MODEL: ${{ vars.OPENAI_TOPIC_MODEL || 'gpt-5.4-mini' }}
+          OPENAI_IMAGE_MODEL: ${{ vars.OPENAI_IMAGE_MODEL || 'gpt-image-1.5' }}
           OPENAI_IMAGE_SIZE: ${{ vars.OPENAI_IMAGE_SIZE || '1024x1024' }}
+          OPENAI_IMAGE_QUALITY: ${{ vars.OPENAI_IMAGE_QUALITY || 'medium' }}
           REQUIRE_IMAGE_GENERATION: ${{ vars.REQUIRE_IMAGE_GENERATION || 'true' }}
+          REQUEST_TIMEOUT_SECONDS: ${{ vars.REQUEST_TIMEOUT_SECONDS || '30' }}
 
           SITE_BASE_URL: ${{ vars.SITE_BASE_URL || 'https://protrucklogistics.org' }}
-          POSTS_TO_GENERATE: ${{ vars.POSTS_TO_GENERATE }}
+          POSTS_TO_GENERATE: ${{ vars.POSTS_TO_GENERATE || '3' }}
           BLOG_TEMPLATE_PATH: ${{ vars.BLOG_TEMPLATE_PATH }}
           BLOG_INCLUDES_HREF: ${{ vars.BLOG_INCLUDES_HREF || '../includes.html' }}
           SKIP_UPLOAD: ${{ vars.SKIP_UPLOAD }}
@@ -43,8 +45,18 @@ jobs:
           FTP_HOST: ${{ secrets.FTP_HOST }}
           FTP_USER: ${{ secrets.FTP_USER }}
           FTP_PASS: ${{ secrets.FTP_PASS }}
-          FTP_IS_SFTP: ${{ vars.FTP_IS_SFTP || 'true' }}
+          FTP_IS_SFTP: ${{ vars.FTP_IS_SFTP || 'false' }}
           FTP_BLOG_DIR: ${{ vars.FTP_BLOG_DIR || '/blog-posts/' }}
+          FTP_SITE_ROOT_DIR: ${{ vars.FTP_SITE_ROOT_DIR }}
           SFTP_STRICT_HOST_KEY: ${{ vars.SFTP_STRICT_HOST_KEY }}
           SFTP_KNOWN_HOSTS: ${{ vars.SFTP_KNOWN_HOSTS }}
         run: python generate_blogs.py
+
+      - name: Commit generated artifacts
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+          git add blog-posts rss.xml sitemap.xml
+          git diff --cached --quiet && echo "No generated changes to commit" && exit 0
+          git commit -m "Generate daily blog content [skip ci]"
+          git push
