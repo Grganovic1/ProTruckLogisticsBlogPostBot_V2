@@ -53,6 +53,13 @@ jobs:
           SFTP_PORT: ${{ vars.SFTP_PORT }}
           SFTP_STRICT_HOST_KEY: ${{ vars.SFTP_STRICT_HOST_KEY }}
           SFTP_KNOWN_HOSTS: ${{ vars.SFTP_KNOWN_HOSTS }}
+          ENABLE_SOCIAL_AUTOPUBLISH: ${{ vars.ENABLE_SOCIAL_AUTOPUBLISH || 'true' }}
+          BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
+          BLUESKY_APP_PASSWORD: ${{ secrets.BLUESKY_APP_PASSWORD }}
+          BLUESKY_SERVICE: ${{ vars.BLUESKY_SERVICE || 'https://bsky.social' }}
+          MASTODON_BASE_URL: ${{ secrets.MASTODON_BASE_URL }}
+          MASTODON_ACCESS_TOKEN: ${{ secrets.MASTODON_ACCESS_TOKEN }}
+          MASTODON_VISIBILITY: ${{ vars.MASTODON_VISIBILITY || 'public' }}
         run: python generate_blogs.py
 
       - name: Commit generated artifacts

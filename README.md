@@ -26,8 +26,10 @@ The workflow runs on GitHub Actions, discovers trucking topics from live industr
    - `blog-posts/index.json`
    - `rss.xml`
    - `sitemap.xml`
-6. Files are uploaded to the hosting account.
-7. Generated content is committed back to the repository.
+6. The generator renders related-post cards on each newly created article page.
+7. Files are uploaded to the hosting account.
+8. If social secrets are present, teaser posts are published to Bluesky and Mastodon.
+9. Generated content is committed back to the repository.
 
 ## Required GitHub secrets
 
@@ -37,6 +39,10 @@ Set these in **Repository → Settings → Secrets and variables → Actions**.
 - `FTP_HOST`
 - `FTP_USER`
 - `FTP_PASS`
+- `BLUESKY_HANDLE` optional for autoposting
+- `BLUESKY_APP_PASSWORD` optional for autoposting
+- `MASTODON_BASE_URL` optional for autoposting
+- `MASTODON_ACCESS_TOKEN` optional for autoposting
 
 ## Optional GitHub variables
 
@@ -53,6 +59,9 @@ Set these in **Repository → Settings → Secrets and variables → Actions**.
 - `BLOG_TEMPLATE_PATH` default: `./blog-post-template.html`
 - `BLOG_INCLUDES_HREF` default: `../includes.html`
 - `SKIP_UPLOAD` default: `false`
+- `ENABLE_SOCIAL_AUTOPUBLISH` default: `true`
+- `BLUESKY_SERVICE` default: `https://bsky.social`
+- `MASTODON_VISIBILITY` default: `public`
 - `FTP_IS_SFTP` default: `false`
 - `FTP_BLOG_DIR` default: `/blog-posts/`
 - `FTP_SITE_ROOT_DIR` default: parent of `FTP_BLOG_DIR`
@@ -63,6 +72,8 @@ Set these in **Repository → Settings → Secrets and variables → Actions**.
 
 - The repository is the source of truth. Generated files are committed back after each run.
 - The workflow uploads only the newly generated post artifacts plus `index.json`, `rss.xml`, and `sitemap.xml`.
+- Related-post cards are rendered from the latest `blog-posts/index.json`, so each newly generated page links deeper into the site.
+- Social posting is skipped automatically if the required Bluesky or Mastodon secrets are missing.
 - If image generation fails and `REQUIRE_IMAGE_GENERATION=true`, the workflow fails.
 - Topic discovery still uses live-source scraping so posts are grounded in current industry coverage without paying for OpenAI web-search tool calls.
 

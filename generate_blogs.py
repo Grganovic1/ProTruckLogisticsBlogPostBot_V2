@@ -20,6 +20,7 @@ import os
 import random
 import re
 import sys
+import uuid
 from datetime import datetime, timezone
 from difflib import SequenceMatcher
 from io import BytesIO
@@ -125,6 +126,15 @@ FTP_IS_SFTP = env_bool("FTP_IS_SFTP", False)
 SFTP_PORT = env_int("SFTP_PORT", 22)
 SFTP_STRICT_HOST_KEY = env_bool("SFTP_STRICT_HOST_KEY", False)
 SFTP_KNOWN_HOSTS = env_value("SFTP_KNOWN_HOSTS", "")
+
+# Social publishing configuration
+ENABLE_SOCIAL_AUTOPUBLISH = env_bool("ENABLE_SOCIAL_AUTOPUBLISH", True)
+BLUESKY_HANDLE = env_value("BLUESKY_HANDLE", "")
+BLUESKY_APP_PASSWORD = env_value("BLUESKY_APP_PASSWORD", "")
+BLUESKY_SERVICE = env_value("BLUESKY_SERVICE", "https://bsky.social").rstrip("/")
+MASTODON_BASE_URL = env_value("MASTODON_BASE_URL", "").rstrip("/")
+MASTODON_ACCESS_TOKEN = env_value("MASTODON_ACCESS_TOKEN", "")
+MASTODON_VISIBILITY = env_value("MASTODON_VISIBILITY", "public")
 
 
 BLOG_CATEGORIES = [
@@ -300,6 +310,36 @@ CLICKBAIT_BAN_TERMS = {
     "you won't believe",
     "guaranteed",
     "instantly",
+}
+
+TITLE_STOPWORDS = {
+    "a",
+    "an",
+    "and",
+    "are",
+    "as",
+    "at",
+    "be",
+    "but",
+    "by",
+    "for",
+    "from",
+    "how",
+    "in",
+    "is",
+    "it",
+    "of",
+    "on",
+    "or",
+    "that",
+    "the",
+    "their",
+    "this",
+    "to",
+    "what",
+    "when",
+    "why",
+    "with",
 }
 
 INTERNAL_LINK_CATALOG = [
@@ -708,7 +748,51 @@ def score_title_candidate(title: str, topic: dict, existing_titles: list[str]) -
     if any(term in lower for term in ("insights", "strategies", "trends")) and not any(term in lower for term in CURRENT_EVENT_TERMS):
         score -= 3
 
+    if normalized and normalized[0].islower():
+        score -= 5
+    if re.search(r"\b(\w+)\s+\1\b", lower):
+        score -= 6
+    if len(re.findall(r"\b[a-z]{1,3}\b", lower)) > 10:
+        score -= 3
+
     return score
+
+
+def review_title_shortlist(topic: dict, candidates: list[str]) -> str:
+    if len(candidates) <= 1:
+        return candidates[0] if candidates else ""
+
+    prompt = f"""
+You are choosing the single best trucking blog headline from a shortlist.
+
+Topic summary: {topic.get('summary', '')}
+Why readers care now: {topic.get('relevance', '')}
+Audience: {topic.get('audience', '')}
+Story angle: {topic.get('angle', '')}
+Legal caution required: {"yes" if topic_needs_legal_caution(topic) else "no"}
+
+Headline options:
+{json.dumps(candidates, ensure_ascii=False, indent=2)}
+
+Choose the one headline that is:
+- the most natural and grammatically clean
+- the strongest click driver without being misleading
+- the best fit for drivers, dispatchers, owner-operators, brokers, or fleet managers
+- careful enough if the topic is allegation- or lawsuit-related
+
+Return ONLY a valid JSON object like:
+{{"best": "..."}}
+"""
+    try:
+        response_text = call_text_model(prompt, model=OPENAI_TEXT_MODEL)
+        parsed = parse_json_from_response(response_text)
+        if isinstance(parsed, dict):
+            best = clean_text(parsed.get("best", ""), max_len=110)
+            if best in candidates:
+                return best
+    except Exception as exc:
+        log(f"Title shortlist review failed, using heuristic ranking instead: {exc}")
+    return candidates[0]
 
 
 def choose_best_title(topic: dict, existing_titles: list[str]) -> tuple[str, list[str]]:
@@ -722,7 +806,16 @@ def choose_best_title(topic: dict, existing_titles: list[str]) -> tuple[str, lis
         key=lambda candidate: score_title_candidate(candidate, topic, existing_titles),
         reverse=True,
     )
+    reviewed = review_title_shortlist(topic, ranked[:5])
+    if reviewed in ranked:
+        return reviewed, ranked
     return ranked[0], ranked
+
+
+def tokenize_similarity_text(*parts: str) -> set[str]:
+    combined = " ".join(clean_text(part) for part in parts).lower()
+    tokens = set(re.findall(r"[a-z0-9][a-z0-9'-]+", combined))
+    return {token for token in tokens if len(token) > 3 and token not in TITLE_STOPWORDS}
 
 
 def select_internal_links(topic: dict, category: str) -> list[dict]:
@@ -760,10 +853,11 @@ Return ONLY a valid JSON object in this format:
 }}
 
 Requirements:
-- Each teaser should be 220 characters or less before the URL
+- Each teaser should be 220 characters or less
 - Use a strong hook and a clear why-it-matters sentence
 - Do not paste the full article
-- End with a natural read-more style lead-in to the URL
+- Do not include the raw URL in the teaser text
+- End with a natural read-more style lead-in
 - If legal caution is required, use cautious wording
 """
     response_text = call_text_model(prompt, model=OPENAI_TEXT_MODEL)
@@ -783,6 +877,262 @@ Requirements:
                     cleaned.append(teaser)
         teasers[channel] = cleaned[:2]
     return teasers
+
+
+def normalize_blog_asset_path(path: str) -> str:
+    normalized = clean_text(path, max_len=400)
+    if normalized.startswith("blog-posts/"):
+        return normalized[len("blog-posts/"):]
+    return normalized
+
+
+def build_public_post_url(post_id: str) -> str:
+    return f"{SITE_BASE_URL}/blog-posts/post-{post_id}.html"
+
+
+def score_related_post(current_post: dict, candidate: dict) -> int:
+    score = 0
+    if clean_text(candidate.get("category", ""), max_len=80) == clean_text(current_post.get("category", ""), max_len=80):
+        score += 8
+
+    current_tokens = tokenize_similarity_text(
+        current_post.get("title", ""),
+        current_post.get("excerpt", ""),
+        current_post.get("category", ""),
+    )
+    candidate_tokens = tokenize_similarity_text(
+        candidate.get("title", ""),
+        candidate.get("excerpt", ""),
+        candidate.get("category", ""),
+    )
+    score += len(current_tokens.intersection(candidate_tokens)) * 3
+
+    candidate_date = parse_sort_date(candidate.get("sort_date") or candidate.get("date"))
+    if candidate_date != datetime.min:
+        score += candidate_date.year - 2020
+    return score
+
+
+def select_related_posts(current_post: dict, all_posts: list[dict], limit: int = 3) -> list[dict]:
+    related_candidates: list[tuple[int, datetime, dict]] = []
+    current_id = str(current_post.get("id", "")).strip()
+
+    for candidate in all_posts:
+        if not isinstance(candidate, dict):
+            continue
+        candidate_id = str(candidate.get("id", "")).strip()
+        if not candidate_id or candidate_id == current_id:
+            continue
+
+        candidate_date = parse_sort_date(candidate.get("sort_date") or candidate.get("date"))
+        related_candidates.append((score_related_post(current_post, candidate), candidate_date, candidate))
+
+    related_candidates.sort(key=lambda item: (item[0], item[1]), reverse=True)
+
+    chosen: list[dict] = []
+    seen_ids: set[str] = set()
+    for _, _, candidate in related_candidates:
+        candidate_id = str(candidate.get("id", "")).strip()
+        if candidate_id in seen_ids:
+            continue
+        seen_ids.add(candidate_id)
+        chosen.append(
+            {
+                "id": candidate_id,
+                "title": clean_text(candidate.get("title", ""), max_len=120),
+                "category": clean_text(candidate.get("category", ""), max_len=60),
+                "excerpt": clean_text(candidate.get("excerpt", ""), max_len=170),
+                "href": f"post-{candidate_id}.html",
+                "image": normalize_blog_asset_path(candidate.get("image", "")),
+            }
+        )
+        if len(chosen) >= limit:
+            break
+
+    return chosen
+
+
+def sanitize_social_teaser(teaser: str, fallback_title: str) -> str:
+    text = clean_text(teaser, max_len=260)
+    text = re.sub(r"https?://\S+", "", text).strip()
+    text = re.sub(
+        r"(read more|learn more|full story|read the full post|details here|see the full post)[:\s-]*$",
+        "",
+        text,
+        flags=re.IGNORECASE,
+    ).strip(" :-")
+    return text or clean_text(fallback_title, max_len=180)
+
+
+def get_social_teaser(post: dict, channel: str) -> str:
+    teasers = post.get("social_teasers", {})
+    if not isinstance(teasers, dict):
+        return clean_text(post.get("title", ""), max_len=180)
+    channel_teasers = teasers.get(channel, [])
+    if isinstance(channel_teasers, list) and channel_teasers:
+        return sanitize_social_teaser(channel_teasers[0], post["title"])
+    return clean_text(post.get("title", ""), max_len=180)
+
+
+def normalize_bluesky_handle(handle: str) -> str:
+    return clean_text(handle).lstrip("@")
+
+
+def bluesky_enabled() -> bool:
+    return bool(BLUESKY_HANDLE and BLUESKY_APP_PASSWORD)
+
+
+def mastodon_enabled() -> bool:
+    return bool(MASTODON_BASE_URL and MASTODON_ACCESS_TOKEN)
+
+
+def create_bluesky_session() -> dict:
+    response = requests.post(
+        f"{BLUESKY_SERVICE}/xrpc/com.atproto.server.createSession",
+        json={
+            "identifier": normalize_bluesky_handle(BLUESKY_HANDLE),
+            "password": BLUESKY_APP_PASSWORD,
+        },
+        timeout=REQUEST_TIMEOUT_SECONDS,
+    )
+    response.raise_for_status()
+    return response.json()
+
+
+def prepare_bluesky_thumbnail(image_path: Path) -> tuple[bytes, str] | tuple[None, None]:
+    if not image_path.exists():
+        return None, None
+
+    image = Image.open(image_path).convert("RGB")
+    size_options = [1024, 768, 512]
+    quality_options = [86, 80, 72]
+
+    for max_size in size_options:
+        working = image.copy()
+        working.thumbnail((max_size, max_size))
+        for quality in quality_options:
+            buffer = BytesIO()
+            working.save(buffer, format="JPEG", quality=quality, optimize=True)
+            payload = buffer.getvalue()
+            if len(payload) <= 900000:
+                return payload, "image/jpeg"
+
+    buffer = BytesIO()
+    image.thumbnail((512, 512))
+    image.save(buffer, format="JPEG", quality=65, optimize=True)
+    return buffer.getvalue(), "image/jpeg"
+
+
+def upload_bluesky_blob(access_token: str, image_bytes: bytes, mime_type: str) -> dict:
+    response = requests.post(
+        f"{BLUESKY_SERVICE}/xrpc/com.atproto.repo.uploadBlob",
+        headers={
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": mime_type,
+        },
+        data=image_bytes,
+        timeout=REQUEST_TIMEOUT_SECONDS,
+    )
+    response.raise_for_status()
+    return response.json()["blob"]
+
+
+def publish_to_bluesky(post: dict) -> dict:
+    session = create_bluesky_session()
+    text = get_social_teaser(post, "bluesky")
+    post_url = build_public_post_url(post["id"])
+    record = {
+        "$type": "app.bsky.feed.post",
+        "text": text,
+        "createdAt": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+        "langs": ["en-US"],
+        "embed": {
+            "$type": "app.bsky.embed.external",
+            "external": {
+                "uri": post_url,
+                "title": clean_text(post["title"], max_len=100),
+                "description": clean_text(post["meta"]["description"], max_len=280),
+            },
+        },
+    }
+
+    image_path = IMAGES_DIR / Path(post["image"]).name
+    image_bytes, mime_type = prepare_bluesky_thumbnail(image_path)
+    if image_bytes and mime_type:
+        try:
+            record["embed"]["external"]["thumb"] = upload_bluesky_blob(session["accessJwt"], image_bytes, mime_type)
+        except Exception as exc:
+            log(f"Bluesky thumbnail upload skipped for {post['id']}: {exc}")
+
+    response = requests.post(
+        f"{BLUESKY_SERVICE}/xrpc/com.atproto.repo.createRecord",
+        headers={"Authorization": f"Bearer {session['accessJwt']}"},
+        json={
+            "repo": session["did"],
+            "collection": "app.bsky.feed.post",
+            "record": record,
+        },
+        timeout=REQUEST_TIMEOUT_SECONDS,
+    )
+    response.raise_for_status()
+    return response.json()
+
+
+def publish_to_mastodon(post: dict) -> dict:
+    teaser = get_social_teaser(post, "mastodon")
+    post_url = build_public_post_url(post["id"])
+    status = f"{teaser}\n\n{post_url}".strip()
+    if len(status) > 490:
+        max_teaser_length = max(80, 490 - len(post_url) - 2)
+        trimmed_teaser = clean_text(teaser, max_len=max_teaser_length).rstrip(".")
+        status = f"{trimmed_teaser}\n\n{post_url}"
+
+    response = requests.post(
+        f"{MASTODON_BASE_URL}/api/v1/statuses",
+        headers={
+            "Authorization": f"Bearer {MASTODON_ACCESS_TOKEN}",
+            "Idempotency-Key": str(uuid.uuid4()),
+        },
+        data={
+            "status": status,
+            "visibility": MASTODON_VISIBILITY,
+            "language": "en",
+        },
+        timeout=REQUEST_TIMEOUT_SECONDS,
+    )
+    response.raise_for_status()
+    return response.json()
+
+
+def autopublish_social_posts(posts: list[dict]) -> dict[str, list[str]]:
+    results = {"bluesky": [], "mastodon": []}
+
+    if not ENABLE_SOCIAL_AUTOPUBLISH:
+        log("Social autopublish disabled by configuration")
+        return results
+
+    if not bluesky_enabled() and not mastodon_enabled():
+        log("No social credentials configured; skipping social autopublish")
+        return results
+
+    for post in posts:
+        if bluesky_enabled():
+            try:
+                response = publish_to_bluesky(post)
+                results["bluesky"].append(response.get("uri", "created"))
+                log(f"Published {post['id']} to Bluesky")
+            except Exception as exc:
+                log(f"Bluesky publish failed for {post['id']}: {exc}")
+
+        if mastodon_enabled():
+            try:
+                response = publish_to_mastodon(post)
+                results["mastodon"].append(response.get("url", "created"))
+                log(f"Published {post['id']} to Mastodon")
+            except Exception as exc:
+                log(f"Mastodon publish failed for {post['id']}: {exc}")
+
+    return results
 
 
 def get_next_post_id() -> str:
@@ -1349,7 +1699,7 @@ def build_absolute_blog_url(path: str) -> str:
     return f"{SITE_BASE_URL}/blog-posts/{trimmed}"
 
 
-def create_blog_post_html(post: dict) -> Path:
+def create_blog_post_html(post: dict, related_posts: list[dict] | None = None) -> Path:
     if not TEMPLATE_PATH.exists():
         raise FileNotFoundError(f"Missing template file: {TEMPLATE_PATH}")
 
@@ -1422,6 +1772,42 @@ def create_blog_post_html(post: dict) -> Path:
         fragment = BeautifulSoup(post["content"], "html.parser")
         for child in list(fragment.contents):
             post_content_container.append(child)
+
+    related_container = soup.find(id="related-posts-container")
+    if related_container is not None:
+        related_container.clear()
+        for related in related_posts or []:
+            column = soup.new_tag("div", attrs={"class": "col-md-4 mb-4"})
+            card = soup.new_tag("article", attrs={"class": "related-card"})
+
+            link = soup.new_tag("a", href=related["href"], attrs={"class": "text-decoration-none"})
+            image = soup.new_tag("div", attrs={"class": "related-image"})
+            related_image = normalize_blog_asset_path(related.get("image", ""))
+            if related_image:
+                image["style"] = f"background-image: url('{related_image}');"
+            link.append(image)
+
+            content = soup.new_tag("div", attrs={"class": "related-content"})
+            category = soup.new_tag("span", attrs={"class": "related-category"})
+            category.string = related.get("category") or "Blog"
+            content.append(category)
+
+            title = soup.new_tag("h3", attrs={"class": "related-title"})
+            title.string = related.get("title") or "Related post"
+            content.append(title)
+
+            excerpt = soup.new_tag("p")
+            excerpt.string = related.get("excerpt") or ""
+            content.append(excerpt)
+
+            read_more = soup.new_tag("span", attrs={"class": "btn btn-link p-0"})
+            read_more.string = "Read more"
+            content.append(read_more)
+
+            link.append(content)
+            card.append(link)
+            column.append(card)
+            related_container.append(column)
 
     author_img = soup.find(id="author-image")
     if author_img is not None:
@@ -1810,6 +2196,15 @@ def validate_runtime_configuration() -> None:
     if not SITE_BASE_URL.startswith("https://"):
         raise RuntimeError("SITE_BASE_URL must use https://")
 
+    if BLUESKY_HANDLE and not BLUESKY_APP_PASSWORD:
+        log("Warning: BLUESKY_HANDLE is set but BLUESKY_APP_PASSWORD is missing; Bluesky autopost will be skipped")
+    if BLUESKY_APP_PASSWORD and not BLUESKY_HANDLE:
+        log("Warning: BLUESKY_APP_PASSWORD is set but BLUESKY_HANDLE is missing; Bluesky autopost will be skipped")
+    if MASTODON_BASE_URL and not MASTODON_ACCESS_TOKEN:
+        log("Warning: MASTODON_BASE_URL is set but MASTODON_ACCESS_TOKEN is missing; Mastodon autopost will be skipped")
+    if MASTODON_ACCESS_TOKEN and not MASTODON_BASE_URL:
+        log("Warning: MASTODON_ACCESS_TOKEN is set but MASTODON_BASE_URL is missing; Mastodon autopost will be skipped")
+
 
 def build_upload_manifest(generated_posts: list[dict], index_path: Path, rss_path: Path, sitemap_path: Path) -> tuple[list[Path], list[Path], list[Path]]:
     blog_files: list[Path] = [index_path]
@@ -1847,6 +2242,7 @@ def main() -> None:
     log(f"Using image model: {OPENAI_IMAGE_MODEL} ({OPENAI_IMAGE_QUALITY}, {OPENAI_IMAGE_SIZE})")
     log(f"Posts to generate this run: {POSTS_TO_GENERATE}")
     log(f"Upload mode: {'SFTP' if FTP_IS_SFTP else 'FTP'}")
+    log(f"Social autopublish: {'enabled' if ENABLE_SOCIAL_AUTOPUBLISH else 'disabled'}")
 
     topics = get_current_logistics_topics()
     if not topics:
@@ -1874,7 +2270,6 @@ def main() -> None:
             continue
 
         save_blog_post(post)
-        create_blog_post_html(post)
         generated_posts.append(post)
         reserved_titles.append(clean_text(post["title"], max_len=220).lower())
         log(f"Completed post: {post['title']}")
@@ -1890,12 +2285,16 @@ def main() -> None:
 
     index_path = update_blog_index(generated_posts)
     updated_posts = load_existing_index_posts()
+    for post in generated_posts:
+        create_blog_post_html(post, select_related_posts(post, updated_posts))
     rss_path = generate_rss_feed(updated_posts)
     sitemap_path = generate_sitemap(updated_posts)
 
     blog_files, image_files, root_files = build_upload_manifest(generated_posts, index_path, rss_path, sitemap_path)
     if not upload_files_to_server(blog_files, image_files, root_files):
         raise RuntimeError("Upload failed")
+
+    autopublish_social_posts(generated_posts)
 
     log("Blog generation pipeline completed successfully")
 
