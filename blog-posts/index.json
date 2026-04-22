@@ -1,43 +1,36 @@
 [
   {
-    "id": 1743209212,
-    "title": "Next-Gen Semi-Truck Cabs: How Driver Comfort is Revolutionizing Fleet Retention",
-    "excerpt": "Next-Gen Semi-Truck Cabs: How Driver Comfort is Revolutionizing Fleet Retention",
-    "date": "March 29, 2025",
-    "category": "Driver Retention",
+    "id": "bp67",
+    "title": "ELD, ELD-Adjacent Data, and Smarter Fleet Compliance in 2026",
+    "excerpt": "ELD, ELD-Adjacent Data, and Smarter Fleet Compliance in 2026 Electronic logging has made it easier to track hours-of-service activity, but ELD compliance in 2026 is no longer just about the log itself. Fleets are being j...",
+    "date": "April 22, 2026",
+    "sort_date": "2026-04-22",
+    "category": "Compliance",
+    "author": "Sarah Johnson",
+    "read_time": "9 min read",
+    "image": "blog-posts/images/bp67-image.png"
+  },
+  {
+    "id": "bp66",
+    "title": "Preventable Roadside Failures: How Fleet Maintenance Can Reduce Safety Downtime",
+    "excerpt": "Preventable Roadside Failures: How Fleet Maintenance Can Reduce Safety Downtime Roadside breakdowns rarely happen without warning. In many fleets, the signs are there long before a truck is pulled over, sidelined at a sc...",
+    "date": "April 22, 2026",
+    "sort_date": "2026-04-22",
+    "category": "Safety",
     "author": "Sarah Johnson",
     "read_time": "10 min read",
-    "image": "blog-posts/images/post-image-1743209212.png"
+    "image": "blog-posts/images/bp66-image.png"
   },
   {
-    "id": 1743208063,
-    "title": "Commercial Fleet Electrification: Real-World ROI Data from Early Semi-Truck Adopters",
-    "excerpt": "Commercial Fleet Electrification: Real-World ROI Data from Early Semi-Truck Adopters",
-    "date": "March 29, 2025",
-    "category": "Market Analysis",
-    "author": "Michael Chen",
-    "read_time": "9 min read",
-    "image": "blog-posts/images/post-image-1743208063.png"
-  },
-  {
-    "id": 1743196827,
-    "title": "AI-Powered Route Optimization: Saving Diesel and Hours for Long-Haul Truckers",
-    "excerpt": "Insights on AI-Powered Route Optimization: Saving Diesel and Hours for Long-Haul Truckers.",
-    "date": "March 28, 2025",
-    "category": "Fuel Management",
-    "author": "John Smith",
+    "id": "bp65",
+    "title": "How Dispatch Technology Is Changing Load Planning for Trucking Fleets",
+    "excerpt": "How Dispatch Technology Is Changing Load Planning for Trucking Fleets **Category:** Logistics Technology **Date:** April 22, 2026 Load planning has always been one of the most important parts of fleet operations. The goa...",
+    "date": "April 22, 2026",
+    "sort_date": "2026-04-22",
+    "category": "Logistics Technology",
+    "author": "Sarah Johnson",
     "read_time": "7 min read",
-    "image": "blog-posts/images/post-image-1743196827.png"
-  },
-  {
-    "id": 1743195750,
-    "title": "Commercial Fleet Electrification: Real-World ROI Data from Early Semi-Truck Adopters",
-    "excerpt": "Commercial Fleet Electrification: Real-World ROI Data from Early Semi-Truck Adopters",
-    "date": "March 28, 2025",
-    "category": "Market Analysis",
-    "author": "John Smith",
-    "read_time": "7 min read",
-    "image": "blog-posts/images/post-image-1743195750.png"
+    "image": "blog-posts/images/bp65-image.png"
   },
   {
     "id": "bp64",
@@ -640,6 +633,26 @@
     "image": "blog-posts/images/bp5-image.png"
   },
   {
+    "id": 1743209212,
+    "title": "Next-Gen Semi-Truck Cabs: How Driver Comfort is Revolutionizing Fleet Retention",
+    "excerpt": "Next-Gen Semi-Truck Cabs: How Driver Comfort is Revolutionizing Fleet Retention",
+    "date": "March 29, 2025",
+    "category": "Driver Retention",
+    "author": "Sarah Johnson",
+    "read_time": "10 min read",
+    "image": "blog-posts/images/post-image-1743209212.png"
+  },
+  {
+    "id": 1743208063,
+    "title": "Commercial Fleet Electrification: Real-World ROI Data from Early Semi-Truck Adopters",
+    "excerpt": "Commercial Fleet Electrification: Real-World ROI Data from Early Semi-Truck Adopters",
+    "date": "March 29, 2025",
+    "category": "Market Analysis",
+    "author": "Michael Chen",
+    "read_time": "9 min read",
+    "image": "blog-posts/images/post-image-1743208063.png"
+  },
+  {
     "id": "bp4",
     "title": "Navigating the ELD Mandate: Leveraging Technology for Compliance and Efficiency",
     "excerpt": "Insights on Navigating the ELD Mandate: Leveraging Technology for Compliance and Efficiency.",
@@ -678,5 +691,25 @@
     "author": "Michael Chen",
     "read_time": "10 min read",
     "image": "blog-posts/images/bp1-image.png"
+  },
+  {
+    "id": 1743196827,
+    "title": "AI-Powered Route Optimization: Saving Diesel and Hours for Long-Haul Truckers",
+    "excerpt": "Insights on AI-Powered Route Optimization: Saving Diesel and Hours for Long-Haul Truckers.",
+    "date": "March 28, 2025",
+    "category": "Fuel Management",
+    "author": "John Smith",
+    "read_time": "7 min read",
+    "image": "blog-posts/images/post-image-1743196827.png"
+  },
+  {
+    "id": 1743195750,
+    "title": "Commercial Fleet Electrification: Real-World ROI Data from Early Semi-Truck Adopters",
+    "excerpt": "Commercial Fleet Electrification: Real-World ROI Data from Early Semi-Truck Adopters",
+    "date": "March 28, 2025",
+    "category": "Market Analysis",
+    "author": "John Smith",
+    "read_time": "7 min read",
+    "image": "blog-posts/images/post-image-1743195750.png"
   }
 ]

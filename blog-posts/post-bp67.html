@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title id="post-title">ELD, ELD-Adjacent Data, and Smarter Fleet Compliance in 2026 | Pro Truck Logistics</title>
+<link href="https://protrucklogistics.org/blog-posts/post-bp67.html" rel="canonical"/>
+<!-- Meta tags for SEO -->
+<meta content="Learn how ELD data and smarter compliance tools help fleet operators, dispatchers, and logistics managers stay ready in 2026." name="description"/>
+<meta content="ELD compliance, fleet compliance 2026, ELD adjacent data, electronic logging device, DOT compliance, fleet data management, trucking compliance" name="keywords"/>
+<!-- Open Graph / Social Media Meta Tags -->
+<meta content="ELD, ELD-Adjacent Data, and Smarter Fleet Compliance in 2026 | Pro Truck Logistics" property="og:title"/>
+<meta content="Learn how ELD data and smarter compliance tools help fleet operators, dispatchers, and logistics managers stay ready in 2026." property="og:description"/>
+<meta content="https://protrucklogistics.org/blog-posts/images/bp67-image.png" property="og:image"/>
+<meta content="https://protrucklogistics.org/blog-posts/post-bp67.html" property="og:url"/>
+<meta content="article" property="og:type"/>
+<!-- Bootstrap CSS from CDN -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+<!-- Font Awesome for icons -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<style>
+    /* Custom styling */
+    :root {
+      --primary: #1a3c6e;     /* Dark blue */
+      --secondary: #e84c3d;   /* Red */
+      --light: #f8f9fa;
+      --dark: #212529;
+    }
+    
+    body {
+      font-family: 'Montserrat', sans-serif;
+    }
+    
+    /* Navigation */
+    .navbar {
+      padding: 15px 0;
+      background-color: var(--primary);
+      height: 150px; /* Increased height to accommodate bigger logo */
+    }
+
+    .navbar-brand {
+      padding: 0;
+      margin: 0;
+    }
+    
+    .navbar-brand img {
+      height: 200px; /* Much larger logo */
+      width: auto;
+      filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2)); /* Add shadow to make it pop */
+    }
+    
+    .navbar .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 100%;
+    }
+    
+    #navbarNav {
+      justify-content: flex-end;
+    }
+    
+    .nav-link {
+      color: white !important;
+      font-weight: 500;
+      margin-left: 15px;
+      transition: color 0.3s;
+    }
+    
+    .nav-link:hover, .nav-link.active {
+      color: var(--secondary) !important;
+    }
+    
+    /* Buttons */
+    .btn-primary {
+      background-color: var(--secondary);
+      border-color: var(--secondary);
+      padding: 10px 20px;
+      font-weight: 600;
+    }
+    
+    .btn-primary:hover {
+      background-color: #c83b2d;
+      border-color: #c83b2d;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    
+    /* Page Header */
+    .page-header {
+      background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('');
+      background-size: cover;
+      background-position: center;
+      color: white;
+      padding: 120px 0 60px;
+      margin-bottom: 40px;
+    }
+    
+    .header-container {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    
+    .post-category {
+      display: inline-block;
+      background-color: var(--secondary);
+      color: white;
+      font-size: 0.9rem;
+      padding: 5px 15px;
+      border-radius: 20px;
+      margin-bottom: 15px;
+    }
+    
+    .post-title {
+      font-size: 2.8rem;
+      font-weight: 700;
+      margin-bottom: 15px;
+      text-shadow: 2px 2px 5px rgba(0,0,0,0.6);
+    }
+    
+    .post-meta {
+      font-size: 1.1rem;
+      margin-bottom: 0;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
+    }
+    
+    .post-meta span {
+      margin: 0 10px;
+    }
+    
+    /* Blog content styles */
+    .blog-content {
+      padding: 0 0 60px;
+    }
+    
+    .content-wrapper {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .blog-content p {
+      margin-bottom: 1.5rem;
+      line-height: 1.8;
+      font-size: 1.1rem;
+    }
+    
+    .blog-content h2 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin: 2rem 0 1rem;
+    }
+    
+    .blog-content h3 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--primary);
+      margin: 1.5rem 0 1rem;
+    }
+    
+    .blog-content ul, .blog-content ol {
+      margin-bottom: 1.5rem;
+      padding-left: 1.5rem;
+    }
+    
+    .blog-content li {
+      margin-bottom: 0.5rem;
+      line-height: 1.8;
+    }
+    
+    .blog-content a {
+      color: var(--secondary);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+    
+    .blog-content a:hover {
+      text-decoration: underline;
+    }
+    
+    .blog-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      margin: 2rem 0;
+    }
+    
+    .blog-content blockquote {
+      border-left: 4px solid var(--secondary);
+      padding-left: 1.5rem;
+      font-style: italic;
+      color: #666;
+      margin: 2rem 0;
+    }
+    
+    /* Author section */
+    .author-section {
+      background-color: var(--light);
+      padding: 30px;
+      border-radius: 10px;
+      margin-top: 30px;
+    }
+    
+    .author-image {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      overflow: hidden;
+      margin-right: 20px;
+    }
+    
+    .author-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .author-name {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 5px;
+      color: var(--primary);
+    }
+    
+    .author-position {
+      font-size: 1rem;
+      color: var(--secondary);
+      margin-bottom: 10px;
+    }
+    
+    /* Share buttons */
+    .share-section {
+      margin: 40px 0;
+      text-align: center;
+    }
+    
+    .share-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+    
+    .share-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+    
+    .share-button {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 20px;
+      border-radius: 50px;
+      color: white;
+      text-decoration: none;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    
+    .share-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .share-button i {
+      margin-right: 8px;
+    }
+    
+    .facebook {
+      background-color: #3b5998;
+    }
+    
+    .twitter {
+      background-color: #1da1f2;
+    }
+    
+    .linkedin {
+      background-color: #0077b5;
+    }
+    
+    .email {
+      background-color: #777;
+    }
+    
+    /* Related posts */
+    .related-posts {
+      padding: 60px 0;
+      background-color: var(--light);
+    }
+    
+    .section-title {
+      font-size: 2rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 40px;
+      color: var(--primary);
+    }
+    
+    .related-card {
+      background-color: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+      height: 100%;
+      transition: transform 0.3s;
+    }
+    
+    .related-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    }
+    
+    .related-image {
+      height: 180px;
+      background-size: cover;
+      background-position: center;
+    }
+    
+    .related-content {
+      padding: 20px;
+    }
+    
+    .related-category {
+      display: inline-block;
+      background-color: var(--primary);
+      color: white;
+      font-size: 0.8rem;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+    }
+    
+    .related-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: var(--primary);
+    }
+    
+    /* Newsletter section */
+    .newsletter-section {
+      background-color: var(--primary);
+      padding: 50px 0;
+      color: white;
+    }
+    
+    /* Footer */
+    footer {
+      background-color: var(--primary);
+      color: white;
+      padding: 60px 0 20px;
+    }
+    
+    .footer-logo {
+      height: 80px;
+      margin-bottom: 20px;
+      background-color: white;
+      padding: 10px;
+      border-radius: 5px;
+    }
+    
+    .footer-heading {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+    
+    .footer-link {
+      color: #ccc;
+      text-decoration: none;
+      display: block;
+      margin-bottom: 10px;
+      transition: color 0.3s;
+    }
+    
+    .footer-link:hover {
+      color: white;
+    }
+    
+    .social-icon {
+      color: white;
+      font-size: 1.5rem;
+      margin-right: 1rem;
+      transition: color 0.3s;
+    }
+    
+    .social-icon:hover {
+      color: var(--secondary);
+    }
+    
+    /* Mobile responsive adjustments */
+    @media (max-width: 991px) {
+      .navbar {
+        height: auto;
+        padding: 15px 0;
+      }
+      
+      .navbar-brand img {
+        height: 100px; /* Still large but better for mobile */
+      }
+      
+      .container {
+        max-width: 100%; /* Full width on mobile */
+        padding-left: 15px;
+        padding-right: 15px;
+      }
+      
+      .post-title {
+        font-size: 2rem;
+      }
+      
+      .content-wrapper {
+        padding: 0 15px;
+      }
+    }
+  </style>
+<!-- Schema.org markup for Article -->
+<script id="article-schema" type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "ELD, ELD-Adjacent Data, and Smarter Fleet Compliance in 2026",
+  "description": "Learn how ELD data and smarter compliance tools help fleet operators, dispatchers, and logistics managers stay ready in 2026.",
+  "image": "https://protrucklogistics.org/blog-posts/images/bp67-image.png",
+  "author": {
+    "@type": "Person",
+    "name": "Sarah Johnson",
+    "jobTitle": "Transportation Analyst"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Pro Truck Logistics",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://protrucklogistics.org/ProTruckLogisticsFiles/logo.jpg"
+    }
+  },
+  "datePublished": "2026-04-22T00:00:00Z",
+  "dateModified": "2026-04-22T00:00:00Z",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://protrucklogistics.org/blog-posts/post-bp67.html"
+  },
+  "keywords": "ELD compliance, fleet compliance 2026, ELD adjacent data, electronic logging device, DOT compliance, fleet data management, trucking compliance",
+  "articleSection": "Compliance"
+}
+</script>
+<script>
+      // Load favicon and shared meta tags
+      fetch('../includes.html')
+        .then(response => response.text())
+        .then(data => {
+          const headElement = document.head;
+          const tempElement = document.createElement('div');
+          tempElement.innerHTML = data;
+          
+          // Add common elements
+          while (tempElement.firstChild) {
+            headElement.insertBefore(tempElement.firstChild, document.querySelector('style'));
+          }
+          
+          // Add page-specific meta tags based on the current page content
+          // These will be dynamically generated for each blog post
+          const pageTitle = document.title;
+          const pageDesc = document.querySelector('meta[name="description"]')?.getAttribute('content') || 
+                          "Logistics and transportation industry insights from Pro Truck Logistics";
+          
+          const metaTags = `
+            <meta property="og:title" content="${pageTitle}">
+            <meta property="og:description" content="${pageDesc}">
+            <meta property="og:type" content="article">
+          `;
+          
+          tempElement.innerHTML = metaTags;
+          while (tempElement.firstChild) {
+            headElement.insertBefore(tempElement.firstChild, document.querySelector('style'));
+          }
+        })
+        .catch(error => console.error('Error loading includes:', error));
+    </script>
+</head>
+<body>
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+<div class="container">
+<a class="navbar-brand" href="../index.html">
+<img alt="Pro Truck Logistics Logo" src="../ProTruckLogisticsFiles/logo.jpg"/>
+</a>
+<button aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-bs-target="#navbarNav" data-bs-toggle="collapse" type="button">
+<span class="navbar-toggler-icon"></span>
+</button>
+<div class="collapse navbar-collapse" id="navbarNav">
+<ul class="navbar-nav ms-auto">
+<li class="nav-item">
+<a class="nav-link" href="../index.html">Home</a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="../services.html">Services</a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="../about.html">About Us</a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="../blog.html">Blog</a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="../careers.html">Careers</a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="../agents.html">Agents</a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="../contact.html">Contact</a>
+</li>
+<li class="nav-item ms-lg-3">
+<a class="btn btn-primary" href="../careers.html">Drive With Us</a>
+</li>
+</ul>
+</div>
+</div>
+</nav>
+<!-- Page Header with Featured Image -->
+<header class="page-header" id="post-header" style="background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('images/bp67-image.png');">
+<div class="header-container">
+<span class="post-category" id="post-category">Compliance</span>
+<h1 class="post-title" id="post-title-header">ELD, ELD-Adjacent Data, and Smarter Fleet Compliance in 2026</h1>
+<p class="post-meta">
+<span><i class="far fa-calendar-alt"></i> <span id="post-date">April 22, 2026</span></span>
+<span><i class="far fa-user"></i> <span id="post-author">Sarah Johnson</span></span>
+<span><i class="far fa-clock"></i> <span id="post-read-time">9 min read</span></span>
+</p>
+</div>
+</header>
+<!-- Blog Content -->
+<section class="blog-content">
+<div class="container">
+<div class="content-wrapper">
+<!-- Blog post content -->
+<div id="post-content"><h2>ELD, ELD-Adjacent Data, and Smarter Fleet Compliance in 2026</h2>
+<p>Electronic logging has made it easier to track hours-of-service activity, but ELD compliance in 2026 is no longer just about the log itself. Fleets are being judged by the quality of their related records too: dispatch instructions, DVIRs, maintenance workflows, load timelines, and correction processes. For fleet operators, dispatchers, logistics managers, and drivers, the practical challenge is not simply recording data — it is making sure the right data matches across systems and supports DOT compliance when questions arise.</p>
+<h2>1. Why ELD compliance now depends on connected records</h2>
+<p>The electronic logging device remains the foundation of hours-of-service tracking, but it does not work in isolation. In day-to-day operations, compliance problems often start when ELD records do not line up with other business records. A driver may be assigned a load that assumes a different departure time, a dispatcher may revise a route after the fact, or a maintenance issue may be documented in one system but not reflected in the inspection trail.</p>
+<p>This is where <strong>ELD adjacent data</strong> matters. By that, we mean the operational records surrounding the ELD itself — dispatch notes, stop times, fueling records, trailer assignments, repair orders, inspection forms, geofence events, and communications that explain why a log changed. These records are not a replacement for the electronic logging device, but they can strengthen the story your fleet presents during a review or audit.</p>
+<p>When the surrounding data is clean, complete, and consistent, fleets usually have an easier time answering questions like:</p>
+<ul>
+<li>Why did the log show a late departure or an off-duty period that changed?</li>
+<li>Was the driver instructed to move the truck for a legitimate business reason?</li>
+<li>Did the vehicle remain in service after a defect was reported?</li>
+<li>Can the carrier show a reasonable chain of events if records are reviewed together?</li>
+</ul>
+<h2>2. Common compliance gaps that still create headaches</h2>
+<p>Many compliance issues in 2026 are not caused by bad intent. They come from incomplete workflows, inconsistent habits, or gaps between departments. For fleets focused on <strong>fleet compliance 2026</strong>, these are some of the most common trouble spots:</p>
+<h3>Unmatched dispatch and ELD records</h3>
+<p>Dispatch instructions may show a load ready time, but the ELD may show the truck moved earlier or later. If those records are not reviewed together, it becomes harder to explain the difference. Dispatchers should understand that their notes may become part of the compliance record, even if the system was not originally designed for that purpose.</p>
+<h3>Driver edits without supporting documentation</h3>
+<p>Drivers sometimes make log edits or add annotations without enough detail. A correction may be valid, but if the reason is vague, the fleet may lose the ability to show a clear explanation later. The best practice is to document the reason, the time frame, and any supporting reference that confirms what happened.</p>
+<h3>Inspection and maintenance delays</h3>
+<p>If a defect is reported in a DVIR or during a roadside inspection, maintenance response should be tracked from start to finish. A common gap is the missing link between the defect report, the work order, and the return-to-service record. In a DOT compliance review, that gap can raise questions even if the repair was eventually completed.</p>
+<h3>Data stored in too many places</h3>
+<p>Some carriers use one platform for ELD data, another for dispatch, another for maintenance, and a separate shared folder for documents. That setup can work, but only if staff know exactly where to find the right record and how to keep it synchronized. The more fragmented the process, the more likely the fleet is to miss a key document when it matters.</p>
+<h3>Poor exception handling</h3>
+<p>Roadside delays, weather events, power issues, device malfunctions, and log corrections all create exceptions. Fleets often struggle not because exceptions happen, but because they are handled inconsistently. Standard procedures help ensure that when something unusual occurs, the documentation is still usable.</p>
+<h2>3. Building a practical compliance workflow around fleet data management</h2>
+<p>Strong <strong>fleet data management</strong> starts with a simple principle: if a record helps explain the operation of the truck, the driver, or the shipment, it should be organized so it can support compliance. That does not mean keeping every note forever in a random folder. It means building a repeatable workflow that ties together the important pieces.</p>
+<h3>Create a single source of truth for each trip</h3>
+<p>For every load or move, fleets should be able to connect the following items quickly:</p>
+<ul>
+<li>Driver assignment and dispatch instructions</li>
+<li>ELD entries and supporting annotations</li>
+<li>Stop times and route changes</li>
+<li>DVIRs or inspection records</li>
+<li>Maintenance actions and repair completion</li>
+<li>Any exception notes, including delays or device problems</li>
+</ul>
+<p>This does not require one software platform for everything, but it does require a clear method for linking records. The key question is simple: if a compliance reviewer asks why something happened, can your team reconstruct the event without guessing?</p>
+<h3>Standardize how dispatch and compliance teams communicate</h3>
+<p>Dispatchers often create the first record of operational intent. If a load changes, a route is revised, or a stop is added, that update should be recorded in a way drivers can understand and compliance staff can later verify. Avoid informal side conversations that never make it into the record. Use standard fields, timestamps, and short notes that explain what changed and why.</p>
+<h3>Train drivers on the “why,” not just the “how”</h3>
+<p>Drivers do not need to become compliance specialists, but they do need to understand why accurate logs matter. Training should cover when to annotate, how to correct an error, what supporting documents to keep, and how to handle an ELD issue while remaining aligned with company policy. When drivers understand the purpose of the process, they are more likely to document events in a way that helps the carrier later.</p>
+<h3>Review exceptions before they become patterns</h3>
+<p>It is easier to fix recurring issues early than to explain them during an audit. Fleets should review repeated log edits, missed inspections, late maintenance closures, and dispatch-to-log mismatches on a regular schedule. If a particular lane, terminal, or shift keeps producing the same issue, the workflow itself may need adjustment.</p>
+<h2>4. Preparing for audits with records that tell a consistent story</h2>
+<p>Audit readiness is not only about having documents available. It is about having documents that agree with each other. During a review, inconsistencies can create more concern than missing detail. If the ELD says one thing, dispatch records say another, and maintenance logs show a separate timeline, the burden shifts to the carrier to explain the difference.</p>
+<p>A stronger audit posture comes from a few disciplined habits:</p>
+<ul>
+<li><strong>Keep records current:</strong> Close out maintenance actions, inspection reports, and log corrections promptly.</li>
+<li><strong>Preserve context:</strong> Add short notes when a change, delay, or exception needs explanation.</li>
+<li><strong>Limit unnecessary edits:</strong> Only correct what is needed, and keep the reason clear.</li>
+<li><strong>Check cross-system consistency:</strong> Compare dispatch, ELD, and maintenance data regularly.</li>
+<li><strong>Assign ownership:</strong> Make sure someone is responsible for each record type and each follow-up step.</li>
+</ul>
+<p>Fleet compliance works best when the process is built into daily operations instead of treated as a separate paperwork task. When dispatch, maintenance, and driver reporting all support the same timeline, the fleet is better positioned to respond to inspections, audits, and internal reviews with confidence.</p>
+<blockquote>
+<p><strong>Practical takeaway:</strong> ELD compliance in 2026 is less about collecting more data and more about connecting the data you already have. Fleets that align electronic logging device records with dispatch notes, maintenance workflows, and exception handling tend to reduce avoidable violations and improve audit readiness.</p>
+</blockquote>
+<h2>Conclusion: make compliance part of operations, not an afterthought</h2>
+<p>For trucking companies, the best approach to <strong>fleet compliance 2026</strong> is to treat ELD data, ELD adjacent data, and operational workflows as one system. That means dispatchers record changes clearly, drivers annotate accurately, maintenance teams close the loop on defects, and managers review records before small issues become bigger problems. The result is a more organized compliance process, fewer surprises, and a stronger position during DOT review.</p>
+<p>If your fleet wants better control over compliance, focus on the basics: clean records, consistent communication, and clear ownership. That foundation will do more for audit readiness than any one form or report on its own.</p></div>
+<!-- Author section -->
+<div class="author-section d-flex align-items-start">
+<div class="author-image">
+<img alt="Sarah Johnson" id="author-image" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3"/>
+</div>
+<div>
+<h4 class="author-name" id="author-name">Sarah Johnson</h4>
+<p class="author-position" id="author-position">Transportation Analyst</p>
+<p id="author-bio">Sarah is an expert in transportation economics and regulatory compliance with a background in both private sector logistics and government oversight.</p>
+</div>
+</div>
+<!-- Share section -->
+<div class="share-section">
+<h5 class="share-title">Share This Post</h5>
+<div class="share-buttons">
+<a class="share-button facebook" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fprotrucklogistics.org%2Fblog-posts%2Fpost-bp67.html" rel="noopener noreferrer" target="_blank"><i class="fab fa-facebook-f"></i> Facebook</a>
+<a class="share-button twitter" href="https://twitter.com/intent/tweet?url=https%3A%2F%2Fprotrucklogistics.org%2Fblog-posts%2Fpost-bp67.html&amp;text=ELD%2C%20ELD-Adjacent%20Data%2C%20and%20Smarter%20Fleet%20Compliance%20in%202026" rel="noopener noreferrer" target="_blank"><i class="fab fa-twitter"></i> Twitter</a>
+<a class="share-button linkedin" href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3A%2F%2Fprotrucklogistics.org%2Fblog-posts%2Fpost-bp67.html&amp;title=ELD%2C%20ELD-Adjacent%20Data%2C%20and%20Smarter%20Fleet%20Compliance%20in%202026" rel="noopener noreferrer" target="_blank"><i class="fab fa-linkedin-in"></i> LinkedIn</a>
+<a class="share-button email" href="mailto:?subject=ELD%2C%20ELD-Adjacent%20Data%2C%20and%20Smarter%20Fleet%20Compliance%20in%202026&amp;body=Check%20out%20this%20article%3A%20https%3A%2F%2Fprotrucklogistics.org%2Fblog-posts%2Fpost-bp67.html"><i class="fas fa-envelope"></i> Email</a>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Related Posts Section -->
+<section class="related-posts">
+<div class="container">
+<h2 class="section-title">Related Posts</h2>
+<div class="row" id="related-posts-container">
+<!-- Related posts will be dynamically inserted here -->
+</div>
+</div>
+</section>
+<!-- Newsletter Section -->
+<section class="newsletter-section">
+<div class="container text-center">
+<h3 class="mb-4">Subscribe to Our Newsletter</h3>
+<p class="mb-4">Stay updated with the latest industry trends, tips, and insights delivered to your inbox.</p>
+<div class="row justify-content-center">
+<div class="col-md-6">
+<div class="input-group mb-3">
+<input aria-label="Email address" class="form-control" placeholder="Enter your email address" type="email"/>
+<button class="btn btn-primary" type="button">Subscribe</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer>
+<div class="container">
+<div class="row">
+<div class="col-lg-4 mb-4 mb-lg-0">
+<img alt="Pro Truck Logistics Logo" class="footer-logo" src="../ProTruckLogisticsFiles/logo.jpg"/>
+<p>Your reliable partner in logistics and transportation services.</p>
+<div class="mt-3">
+<a class="social-icon" href="#"><i class="fab fa-facebook"></i></a>
+<a class="social-icon" href="#"><i class="fab fa-instagram"></i></a>
+<a class="social-icon" href="#"><i class="fab fa-linkedin"></i></a>
+</div>
+</div>
+<div class="col-md-4 col-lg-2 mb-4 mb-md-0">
+<h5 class="footer-heading">Quick Links</h5>
+<a class="footer-link" href="../index.html">Home</a>
+<a class="footer-link" href="../services.html">Services</a>
+<a class="footer-link" href="../about.html">About Us</a>
+<a class="footer-link" href="../contact.html">Contact</a>
+</div>
+<div class="col-md-4 col-lg-2 mb-4 mb-md-0">
+<h5 class="footer-heading">Services</h5>
+<a class="footer-link" href="../services.html">Customers</a>
+<a class="footer-link" href="../careers.html">Employment</a>
+<a class="footer-link" href="../carriers.html">Carriers</a>
+<a class="footer-link" href="../careers.html">Drivers</a>
+</div>
+<div class="col-lg-4">
+<h5 class="footer-heading">Contact Info</h5>
+<address>
+<p><i class="fas fa-map-marker-alt me-2"></i> Lawrenceville, GA</p>
+<p><i class="fas fa-phone me-2"></i> <a class="footer-link" href="tel:4044688268">404-468-8268</a></p>
+<p><i class="fas fa-envelope me-2"></i> <a class="footer-link" href="mailto:info@protrucklogistics.org">info@protrucklogistics.org</a></p>
+</address>
+</div>
+</div>
+<hr class="mt-4 mb-3" style="border-color: rgba(255,255,255,0.1);"/>
+<div class="row">
+<div class="col-md-6 text-center text-md-start">
+<p class="mb-0">© 2025 Pro Truck Logistics. All rights reserved.</p>
+</div>
+<div class="col-md-6 text-center text-md-end">
+<a class="text-white text-decoration-none me-3" href="../privacy.html">Privacy Policy</a>
+<a class="text-white text-decoration-none" href="../terms.html">Terms of Service</a>
+</div>
+</div>
+</div>
+</footer>
+<!-- Bootstrap JS bundle with Popper from CDN -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
