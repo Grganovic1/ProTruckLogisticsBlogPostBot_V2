@@ -10,14 +10,14 @@ The workflow runs on GitHub Actions, discovers trucking topics from live industr
 - Topic model: `gpt-5.4-mini`
 - Image model: `gpt-image-1.5`
 - Image quality: `medium`
-- Posts per run: `3`
+- Posts per run: `2`
 - Upload mode: FTP (`FTP_IS_SFTP=false`)
 
 ## How it works
 
 1. GitHub Actions runs on schedule or manually.
 2. `generate_blogs.py` scrapes current trucking/logistics sources for topic context.
-3. OpenAI generates topic framing, SEO metadata, article HTML, and a cover image prompt.
+3. OpenAI ranks timely trucking topics, generates stronger title options, writes sharper article HTML, and creates teaser copy plus a cover image prompt.
 4. OpenAI image generation creates a cover image for each post.
 5. Generated artifacts are written locally:
    - `blog-posts/<post-id>.json`
@@ -47,7 +47,7 @@ Set these in **Repository → Settings → Secrets and variables → Actions**.
 - `OPENAI_IMAGE_SIZE` default: `1024x1024`
 - `OPENAI_IMAGE_QUALITY` default: `medium`
 - `REQUIRE_IMAGE_GENERATION` default: `true`
-- `POSTS_TO_GENERATE` default: `3`
+- `POSTS_TO_GENERATE` default: `2`
 - `REQUEST_TIMEOUT_SECONDS` default: `30`
 - `SITE_BASE_URL` default: `https://protrucklogistics.org`
 - `BLOG_TEMPLATE_PATH` default: `./blog-post-template.html`

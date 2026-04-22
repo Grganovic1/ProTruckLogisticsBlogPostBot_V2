@@ -37,7 +37,7 @@ jobs:
           REQUEST_TIMEOUT_SECONDS: ${{ vars.REQUEST_TIMEOUT_SECONDS || '30' }}
 
           SITE_BASE_URL: ${{ vars.SITE_BASE_URL || 'https://protrucklogistics.org' }}
-          POSTS_TO_GENERATE: ${{ vars.POSTS_TO_GENERATE || '3' }}
+          POSTS_TO_GENERATE: ${{ vars.POSTS_TO_GENERATE || '2' }}
           BLOG_TEMPLATE_PATH: ${{ vars.BLOG_TEMPLATE_PATH }}
           BLOG_INCLUDES_HREF: ${{ vars.BLOG_INCLUDES_HREF || '../includes.html' }}
           SKIP_UPLOAD: ${{ vars.SKIP_UPLOAD }}

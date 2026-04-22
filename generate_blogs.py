@@ -95,7 +95,7 @@ REQUIRE_IMAGE_GENERATION = env_bool("REQUIRE_IMAGE_GENERATION", True)
 
 # Site/publishing configuration
 SITE_BASE_URL = env_value("SITE_BASE_URL", "https://protrucklogistics.org").rstrip("/")
-POSTS_TO_GENERATE = max(1, env_int("POSTS_TO_GENERATE", 3))
+POSTS_TO_GENERATE = max(1, env_int("POSTS_TO_GENERATE", 2))
 SKIP_UPLOAD = env_bool("SKIP_UPLOAD", False)
 REQUEST_TIMEOUT_SECONDS = env_int("REQUEST_TIMEOUT_SECONDS", 30)
 
@@ -200,6 +200,129 @@ STATIC_SITEMAP_PAGES = [
     "privacy.html",
     "terms.html",
     "track-shipment.html",
+]
+
+CURRENT_EVENT_TERMS = {
+    "lawsuit",
+    "alleges",
+    "fraud",
+    "scandal",
+    "investigation",
+    "probe",
+    "fine",
+    "underpaid",
+    "underpayment",
+    "crackdown",
+    "shutdown",
+    "layoff",
+    "bankruptcy",
+    "violation",
+    "settlement",
+    "wage",
+    "paycheck",
+    "compliance",
+    "fmcsa",
+    "dot",
+    "rates",
+    "tariff",
+    "insurance",
+}
+
+AUDIENCE_TERMS = {
+    "driver",
+    "drivers",
+    "dispatcher",
+    "dispatchers",
+    "fleet",
+    "fleets",
+    "owner-operator",
+    "owner operators",
+    "carrier",
+    "carriers",
+    "broker",
+    "brokers",
+    "shipper",
+    "shippers",
+}
+
+STAKE_TERMS = {
+    "cost",
+    "costs",
+    "pay",
+    "profit",
+    "margin",
+    "risk",
+    "downtime",
+    "empty miles",
+    "breakdown",
+    "delay",
+    "delays",
+    "audit",
+    "penalty",
+    "safety",
+    "claim",
+    "claims",
+    "cash flow",
+    "recruiting",
+    "retention",
+}
+
+TITLE_CURIOSITY_TERMS = {
+    "why",
+    "what",
+    "how",
+    "reveals",
+    "behind",
+    "mistake",
+    "mistakes",
+    "warning",
+    "problem",
+    "problems",
+    "risk",
+    "risks",
+    "before",
+    "hidden",
+}
+
+LEGAL_CAUTION_TERMS = {
+    "lawsuit alleges",
+    "drivers say",
+    "report raises",
+    "investigation",
+    "what fleets can learn",
+    "what drivers should know",
+}
+
+CLICKBAIT_BAN_TERMS = {
+    "shocking",
+    "unbelievable",
+    "secret trick",
+    "you won't believe",
+    "guaranteed",
+    "instantly",
+}
+
+INTERNAL_LINK_CATALOG = [
+    {
+        "href": "../services.html",
+        "label": "Pro Truck Logistics services",
+        "keywords": ["dispatch", "dispatchers", "logistics", "shipping", "freight", "operations", "fleet"],
+    },
+    {
+        "href": "../carriers.html",
+        "label": "carrier support options",
+        "keywords": ["carrier", "carriers", "owner-operator", "owner operators", "drivers", "capacity"],
+    },
+    {
+        "href": "../agents.html",
+        "label": "agent network",
+        "keywords": ["agent", "broker", "brokers", "freight", "sales", "customers"],
+    },
+    {
+        "href": "../contact.html",
+        "label": "contact Pro Truck Logistics",
+        "keywords": ["contact", "support", "quote", "help", "team"],
+    },
 ]
 
 openai_client = OpenAI(api_key=OPENAI_API_KEY, base_url=OPENAI_BASE_URL) if OPENAI_API_KEY else None
@@ -456,6 +579,212 @@ def is_title_similar(candidate_title: str, existing_titles: list[str], threshold
     return False
 
 
+def topic_text(topic: dict) -> str:
+    return " ".join(
+        clean_text(topic.get(field, ""))
+        for field in ("title", "summary", "relevance", "audience", "angle", "urgency")
+    ).lower()
+
+
+def topic_matches_keywords(topic: dict, keywords: set[str]) -> int:
+    text = topic_text(topic)
+    return sum(1 for term in keywords if term in text)
+
+
+def topic_needs_legal_caution(topic: dict) -> bool:
+    legal_sensitivity = clean_text(topic.get("legal_sensitivity", ""), max_len=20).lower()
+    if legal_sensitivity in {"medium", "high"}:
+        return True
+    return topic_matches_keywords(topic, {"lawsuit", "alleges", "fraud", "investigation", "settlement", "underpaid"}) > 0
+
+
+def score_topic_heat(topic: dict) -> int:
+    score = 0
+    score += topic_matches_keywords(topic, CURRENT_EVENT_TERMS) * 4
+    score += topic_matches_keywords(topic, AUDIENCE_TERMS) * 3
+    score += topic_matches_keywords(topic, STAKE_TERMS) * 2
+
+    urgency = clean_text(topic.get("urgency", ""), max_len=120).lower()
+    angle = clean_text(topic.get("angle", ""), max_len=120).lower()
+    if any(term in urgency for term in ("now", "today", "current", "breaking", "this week", "2026")):
+        score += 5
+    if any(term in angle for term in ("warning", "mistake", "hidden cost", "scandal", "fraud", "pay", "compliance", "risk")):
+        score += 4
+    if topic_needs_legal_caution(topic):
+        score += 4
+    return score
+
+
+def prioritize_topics(topics: list[dict]) -> list[dict]:
+    decorated = []
+    for topic in topics:
+        working = dict(topic)
+        working["heat_score"] = score_topic_heat(working)
+        decorated.append(working)
+    decorated.sort(key=lambda item: item.get("heat_score", 0), reverse=True)
+    return decorated
+
+
+def generate_title_candidates(topic: dict) -> list[str]:
+    legal_caution = "yes" if topic_needs_legal_caution(topic) else "no"
+    prompt = f"""
+You are writing blog headlines for a trucking and logistics website.
+
+Create 10 headline options for this topic.
+
+Topic:
+- Working angle: {topic.get('title', '')}
+- Summary: {topic.get('summary', '')}
+- Why readers care now: {topic.get('relevance', '')}
+- Audience: {topic.get('audience', '')}
+- Story angle: {topic.get('angle', '')}
+- Urgency: {topic.get('urgency', '')}
+- Legal caution required: {legal_caution}
+
+Requirements:
+- Headlines must make drivers, dispatchers, owner-operators, brokers, or fleet managers want to click
+- Prefer current-event framing when the topic supports it
+- Be specific, sharp, and emotionally engaging
+- Do not be misleading, vague, or exaggerated
+- Maximum 110 characters
+- If legal caution is required, use wording like lawsuit alleges, drivers say, report raises, or what fleets can learn
+- Avoid hashtags and quotation marks
+
+Return ONLY a valid JSON array of 10 strings.
+"""
+    response_text = call_text_model(prompt, model=OPENAI_TEXT_MODEL)
+    parsed = parse_json_from_response(response_text)
+
+    candidates: list[str] = []
+    if isinstance(parsed, list):
+        for item in parsed:
+            title = clean_text(item, max_len=110)
+            if title and title not in candidates:
+                candidates.append(title)
+
+    seed_title = clean_text(topic.get("title", ""), max_len=110)
+    if seed_title and seed_title not in candidates:
+        candidates.append(seed_title)
+
+    return candidates[:12]
+
+
+def score_title_candidate(title: str, topic: dict, existing_titles: list[str]) -> int:
+    normalized = clean_text(title, max_len=110)
+    lower = normalized.lower()
+    score = 0
+
+    if is_title_similar(normalized, existing_titles, threshold=0.9):
+        score -= 50
+
+    length = len(normalized)
+    if 60 <= length <= 100:
+        score += 8
+    elif 48 <= length <= 110:
+        score += 4
+    else:
+        score -= 4
+
+    if any(term in lower for term in TITLE_CURIOSITY_TERMS):
+        score += 5
+    if any(term in lower for term in AUDIENCE_TERMS):
+        score += 5
+    if any(term in lower for term in STAKE_TERMS):
+        score += 4
+    if any(char.isdigit() for char in normalized):
+        score += 2
+    if ":" in normalized:
+        score += 1
+
+    if topic_needs_legal_caution(topic):
+        if any(term in lower for term in LEGAL_CAUTION_TERMS):
+            score += 8
+        else:
+            score -= 8
+
+    if any(term in lower for term in CLICKBAIT_BAN_TERMS):
+        score -= 12
+
+    if any(term in lower for term in ("insights", "strategies", "trends")) and not any(term in lower for term in CURRENT_EVENT_TERMS):
+        score -= 3
+
+    return score
+
+
+def choose_best_title(topic: dict, existing_titles: list[str]) -> tuple[str, list[str]]:
+    candidates = generate_title_candidates(topic)
+    if not candidates:
+        seed_title = clean_text(topic.get("title", ""), max_len=110)
+        return seed_title, [seed_title] if seed_title else []
+
+    ranked = sorted(
+        candidates,
+        key=lambda candidate: score_title_candidate(candidate, topic, existing_titles),
+        reverse=True,
+    )
+    return ranked[0], ranked
+
+
+def select_internal_links(topic: dict, category: str) -> list[dict]:
+    text = f"{topic_text(topic)} {clean_text(category)}"
+    ranked_links: list[tuple[int, dict]] = []
+    for link in INTERNAL_LINK_CATALOG:
+        score = sum(text.count(keyword) for keyword in link["keywords"])
+        if score:
+            ranked_links.append((score, link))
+
+    ranked_links.sort(key=lambda item: item[0], reverse=True)
+    chosen = [link for _, link in ranked_links[:2]]
+    if not chosen:
+        chosen = INTERNAL_LINK_CATALOG[:1]
+    return chosen
+
+
+def generate_social_teasers(title: str, topic: dict, post_url: str) -> dict:
+    legal_caution = "yes" if topic_needs_legal_caution(topic) else "no"
+    prompt = f"""
+Create short social teaser copy for a trucking/logistics blog article.
+
+Article title: {title}
+Summary: {topic.get('summary', '')}
+Why it matters: {topic.get('relevance', '')}
+Audience: {topic.get('audience', '')}
+Story angle: {topic.get('angle', '')}
+Post URL: {post_url}
+Legal caution required: {legal_caution}
+
+Return ONLY a valid JSON object in this format:
+{{
+  "bluesky": ["...", "..."],
+  "mastodon": ["...", "..."]
+}}
+
+Requirements:
+- Each teaser should be 220 characters or less before the URL
+- Use a strong hook and a clear why-it-matters sentence
+- Do not paste the full article
+- End with a natural read-more style lead-in to the URL
+- If legal caution is required, use cautious wording
+"""
+    response_text = call_text_model(prompt, model=OPENAI_TEXT_MODEL)
+    parsed = parse_json_from_response(response_text)
+    empty = {"bluesky": [], "mastodon": []}
+    if not isinstance(parsed, dict):
+        return empty
+
+    teasers = {}
+    for channel in ("bluesky", "mastodon"):
+        value = parsed.get(channel, [])
+        cleaned: list[str] = []
+        if isinstance(value, list):
+            for item in value:
+                teaser = clean_text(item, max_len=220)
+                if teaser and teaser not in cleaned:
+                    cleaned.append(teaser)
+        teasers[channel] = cleaned[:2]
+    return teasers
+
+
 def get_next_post_id() -> str:
     max_bp_id = 0
     max_numeric_id = 0
@@ -562,22 +891,36 @@ def validate_topics(raw_topics) -> list[dict]:
         summary = clean_text(item.get("summary", ""), max_len=300)
         relevance = clean_text(item.get("relevance", ""), max_len=300)
         category = clean_text(item.get("category", ""), max_len=60)
+        audience = clean_text(item.get("audience", ""), max_len=120)
+        angle = clean_text(item.get("angle", ""), max_len=120)
+        urgency = clean_text(item.get("urgency", ""), max_len=120)
+        legal_sensitivity = clean_text(item.get("legal_sensitivity", ""), max_len=20).lower()
 
         if not title or not summary:
             continue
 
         if not relevance:
             relevance = "This topic is relevant to fleet operators and logistics managers due to current market and operational impacts."
+        if not audience:
+            audience = "drivers, dispatchers, fleet managers, brokers, and owner-operators"
+        if not angle:
+            angle = "timely industry takeaway"
+        if legal_sensitivity not in {"low", "medium", "high"}:
+            legal_sensitivity = "medium" if topic_matches_keywords(item, {"lawsuit", "fraud", "investigation", "underpaid"}) else "low"
 
         topic = {
             "title": title,
             "summary": summary,
             "relevance": relevance,
             "category": category or "",
+            "audience": audience,
+            "angle": angle,
+            "urgency": urgency,
+            "legal_sensitivity": legal_sensitivity,
         }
         validated.append(topic)
 
-    return validated
+    return prioritize_topics(validated)
 
 
 def get_current_logistics_topics() -> list[dict]:
@@ -589,12 +932,22 @@ def get_current_logistics_topics() -> list[dict]:
             prompt = f"""
 You are assisting a commercial trucking company blog editor.
 
-Using the article list below, generate 7 strong blog topics for fleet operators and logistics managers.
-Use the latest context from the provided list. Return ONLY a valid JSON array.
+Using the article list below, generate 7 high-interest blog topics for drivers, dispatchers, owner-operators, brokers, and fleet managers.
+Prioritize current events, scandals, lawsuits, fraud allegations, pay issues, compliance crackdowns, safety failures, market shocks, and technology problems when they are relevant.
+Return ONLY a valid JSON array.
 
 Required JSON format:
 [
-  {{"title": "...", "summary": "...", "relevance": "...", "category": "..."}},
+  {{
+    "title": "...",
+    "summary": "...",
+    "relevance": "...",
+    "category": "...",
+    "audience": "...",
+    "angle": "...",
+    "urgency": "...",
+    "legal_sensitivity": "low|medium|high"
+  }},
   ...
 ]
 
@@ -604,7 +957,11 @@ Requirements:
 - Keep topics distinct from each other
 - No invented statistics
 - No fake named experts
-- Focus on topics that would still be useful to fleet operators a few weeks from now
+- Focus on topics that real people in trucking would want to click today
+- Prefer topics with money, safety, legal, compliance, downtime, pay, or fraud stakes
+- If the topic involves allegations or lawsuits, phrase it carefully and flag legal_sensitivity as medium or high
+- The summary should explain the hook and why readers care now
+- The angle should describe the emotional frame, such as warning, hidden cost, operator protection, accountability, mistake, or current-event fallout
 
 Articles:
 {payload}
@@ -622,20 +979,33 @@ Articles:
         log("Generating fallback topic ideas directly from OpenAI...")
         today = datetime.now(timezone.utc).strftime("%B %d, %Y")
         prompt = f"""
-Today is {today}. Propose 7 timely blog topics for a semi-truck logistics company.
+Today is {today}. Propose 7 high-interest trucking blog topics that people in the industry would actually want to click.
 
 Return ONLY a valid JSON array in this format:
 [
-  {{"title": "...", "summary": "...", "relevance": "...", "category": "..."}},
+  {{
+    "title": "...",
+    "summary": "...",
+    "relevance": "...",
+    "category": "...",
+    "audience": "...",
+    "angle": "...",
+    "urgency": "...",
+    "legal_sensitivity": "low|medium|high"
+  }},
   ...
 ]
 
 Requirements:
 - Focus on commercial trucking, freight hauling, fleet operations, compliance, driver recruiting, safety, fuel, and logistics technology
+- Prioritize current events, controversies, lawsuits, fraud concerns, driver pay, dispatch failures, compliance pressure, and market pain
 - Keep each summary to 1-2 sentences
 - No invented statistics
 - No fake named experts
 - Avoid duplicate or near-duplicate topics
+- Make the topics emotionally engaging but still truthful
+- The audience field must name who cares most
+- The angle field should describe the best framing, like warning, hidden cost, operator protection, scandal fallout, or current-event breakdown
 """
         response_text = call_text_model(prompt, model=OPENAI_TOPIC_MODEL)
         parsed = parse_json_from_response(response_text)
@@ -648,34 +1018,34 @@ Requirements:
 
     return [
         {
-            "title": "Fleet Uptime Strategies for 2026: Reducing Unplanned Downtime",
-            "summary": "How fleets can cut roadside breakdowns through preventive maintenance workflows and better service scheduling.",
-            "relevance": "Unplanned downtime directly impacts on-time delivery performance and operating margins.",
+            "title": "What Drivers Should Watch When Payroll Disputes and Lease Deductions Stop Making Sense",
+            "summary": "A practical look at the warning signs behind pay disputes, opaque deductions, and why drivers should document everything early.",
+            "relevance": "Driver pay issues spread fast because they hit trust, cash flow, and retention all at once.",
             "category": "Fleet Management",
+            "audience": "drivers and owner-operators",
+            "angle": "operator protection",
+            "urgency": "pay and settlement disputes stay highly clickable whenever trust in carriers is under pressure",
+            "legal_sensitivity": "medium",
         },
         {
-            "title": "Preparing for New Compliance Pressure in Long-Haul Operations",
-            "summary": "A practical overview of compliance controls fleets should review to stay audit-ready.",
-            "relevance": "Compliance penalties and service interruptions create avoidable risk for growing carriers.",
+            "title": "Why Small Dispatch Mistakes Turn Into Expensive Driver Problems",
+            "summary": "Miscommunication, bad appointment handling, and weak load planning can quietly create driver anger and lost margin.",
+            "relevance": "Dispatch decisions shape detention, empty miles, and whether drivers stick around.",
             "category": "Regulations",
+            "audience": "dispatchers and fleet managers",
+            "angle": "hidden cost",
+            "urgency": "this stays relevant whenever rates are tight and fleets need cleaner execution",
+            "legal_sensitivity": "low",
         },
         {
-            "title": "Fuel Cost Volatility: Route and Dispatch Tactics That Protect Margin",
-            "summary": "Operational changes dispatch teams can apply to reduce empty miles and fuel waste.",
-            "relevance": "Fuel is one of the largest variable costs in trucking operations.",
-            "category": "Fuel Management",
-        },
-        {
-            "title": "Retaining Drivers in 2026: What Fleets Can Improve Beyond Pay",
-            "summary": "Driver experience, dispatch clarity, and equipment quality all affect retention outcomes.",
-            "relevance": "Driver turnover creates recruiting costs and service disruption.",
-            "category": "Driver Retention",
-        },
-        {
-            "title": "What Dispatch Teams Can Automate Without Losing Operational Control",
-            "summary": "A practical look at which dispatch tasks benefit most from automation and where people still matter most.",
-            "relevance": "Technology investment is only valuable when it improves execution and customer service.",
+            "title": "The Compliance Problems Fleets Miss Before Auditors and Claims Expose Them",
+            "summary": "A sharper look at the paperwork, inspection habits, and data gaps that become expensive only after something goes wrong.",
+            "relevance": "Compliance failures stay hot because they hit safety scores, insurance pressure, and customer trust.",
             "category": "Technology Trends",
+            "audience": "fleet managers and safety teams",
+            "angle": "warning",
+            "urgency": "compliance pressure never stays quiet for long in trucking",
+            "legal_sensitivity": "low",
         },
     ]
 
@@ -718,6 +1088,7 @@ Write one SEO meta description for this trucking/logistics blog title:
 Requirements:
 - Max 155 characters
 - Audience: fleet operators, dispatchers, and logistics managers
+- Make it feel current, specific, and worth clicking
 - Plain text only
 - No hashtags
 - No quotation marks
@@ -739,9 +1110,13 @@ Return only a comma-separated list. No numbering. No hashtags.
     return normalize_keywords(response)
 
 
-def generate_post_content(topic: dict, category: str, post_date_display: str, keywords: str) -> str:
+def generate_post_content(topic: dict, category: str, post_date_display: str, keywords: str, internal_links: list[dict]) -> str:
+    legal_note = "Use careful language such as lawsuit alleges, drivers say, or what fleets can learn." if topic_needs_legal_caution(topic) else "State the issue confidently, but stay accurate."
+    internal_link_lines = "\n".join(
+        f"- {link['label']}: {link['href']}" for link in internal_links
+    )
     prompt = f"""
-Write a detailed blog post for Pro Truck Logistics.
+Write a sharp, highly readable blog post for Pro Truck Logistics.
 
 Title: {topic.get('title', '')}
 Context: {topic.get('summary', '')}
@@ -749,18 +1124,32 @@ Industry relevance: {topic.get('relevance', '')}
 Category: {category}
 Date: {post_date_display}
 Target keywords: {keywords}
+Primary audience: {topic.get('audience', '')}
+Story angle: {topic.get('angle', '')}
+Urgency: {topic.get('urgency', '')}
 
 Requirements:
 - Audience: fleet operators, dispatchers, logistics managers, and drivers
-- 1 short introduction + 3 or 4 body sections + practical conclusion
-- Use practical, actionable guidance
+- Open with a 2-4 sentence hook that highlights the tension, risk, or money at stake
+- Use 3 or 4 body sections with strong H2 subheads
+- Include a section that explains what most people miss
+- End with a practical what-to-do-next conclusion
+- Use practical, actionable guidance and plainspoken language
+- Keep paragraphs fairly short and readable
+- Include at least one bullet list or numbered list
+- If helpful, use a short real-world scenario instead of generic filler
 - No fabricated statistics
 - No fake named experts
 - If data is uncertain, phrase it carefully in general terms
-- Keep the tone professional and useful, not fluffy
+- {legal_note}
+- Keep the tone confident, useful, and engaging, not corporate or bland
+- Add up to 2 internal links only if they genuinely help the reader
 - OUTPUT ONLY AN HTML FRAGMENT
 - Do not include <!DOCTYPE>, <html>, <head>, or <body>
 - Allowed tags: <p>, <h2>, <h3>, <ul>, <ol>, <li>, <blockquote>, <strong>, <em>, <a>
+
+Relevant internal links:
+{internal_link_lines}
 """
     raw_content = call_text_model(prompt, model=OPENAI_TEXT_MODEL)
     return normalize_html_content(raw_content)
@@ -847,14 +1236,18 @@ def download_and_save_image(image_url: str, post_id: str) -> str:
     return f"images/{local_filename}"
 
 
-def generate_blog_post(topic: dict) -> dict:
-    title = clean_text(topic.get("title", ""), max_len=180)
+def generate_blog_post(topic: dict, existing_titles: list[str] | None = None) -> dict:
+    title, title_candidates = choose_best_title(topic, existing_titles or [])
+    title = clean_text(title, max_len=180)
     if not title:
         raise ValueError("Topic missing title")
 
     author = random.choice(AUTHORS)
     category = choose_category_for_topic(topic)
     post_id = get_next_post_id()
+    post_url = f"{SITE_BASE_URL}/blog-posts/post-{post_id}.html"
+    working_topic = dict(topic)
+    working_topic["title"] = title
 
     now = datetime.now(timezone.utc)
     post_date_display = now.strftime("%B %d, %Y")
@@ -862,21 +1255,32 @@ def generate_blog_post(topic: dict) -> dict:
 
     meta_description = generate_meta_description(title)
     keywords = generate_keywords(title)
-    content = generate_post_content(topic, category, post_date_display, keywords)
+    internal_links = select_internal_links(working_topic, category)
+    content = generate_post_content(working_topic, category, post_date_display, keywords, internal_links)
 
-    image_url, image_source = get_relevant_image(topic)
+    image_url, image_source = get_relevant_image(working_topic)
     local_or_remote_image = download_and_save_image(image_url, post_id)
 
     excerpt = generate_excerpt(content)
-    read_time = f"{random.randint(7, 10)} min read"
+    text_only_content = clean_text(BeautifulSoup(content, "html.parser").get_text(" ", strip=True))
+    word_count = max(400, len(re.findall(r"\w+", text_only_content)))
+    read_minutes = max(4, min(9, round(word_count / 170)))
+    read_time = f"{read_minutes} min read"
+    social_teasers = generate_social_teasers(title, working_topic, post_url)
 
     return {
         "id": post_id,
         "title": title,
+        "source_title": clean_text(topic.get("title", ""), max_len=180),
+        "title_candidates": title_candidates[:5],
         "excerpt": excerpt,
         "date": post_date_display,
         "sort_date": sort_date,
         "category": category,
+        "audience": clean_text(topic.get("audience", ""), max_len=120),
+        "angle": clean_text(topic.get("angle", ""), max_len=120),
+        "urgency": clean_text(topic.get("urgency", ""), max_len=120),
+        "legal_sensitivity": clean_text(topic.get("legal_sensitivity", ""), max_len=20).lower(),
         "author": author["name"],
         "author_position": author["position"],
         "author_bio": author["bio"],
@@ -885,6 +1289,8 @@ def generate_blog_post(topic: dict) -> dict:
         "content": content,
         "image": local_or_remote_image,
         "image_source": image_source,
+        "internal_links": internal_links,
+        "social_teasers": social_teasers,
         "meta": {
             "description": meta_description,
             "keywords": keywords,
@@ -1457,12 +1863,12 @@ def main() -> None:
             continue
 
         compare_titles = recent_titles + reserved_titles
-        if is_title_similar(title, compare_titles):
+        if is_title_similar(title, compare_titles, threshold=0.93):
             log(f"Skipping near-duplicate topic: {title}")
             continue
 
         try:
-            post = generate_blog_post(topic)
+            post = generate_blog_post(topic, compare_titles)
         except Exception as exc:
             log(f"Skipping topic due to generation error: {title} ({exc})")
             continue
