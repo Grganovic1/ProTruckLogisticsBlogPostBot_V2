@@ -1,5 +1,27 @@
 [
   {
+    "id": "bp69",
+    "title": "ELD Crackdown 2026: What Fleets Are Still Getting Wrong and What Fleets Can Learn",
+    "excerpt": "For a lot of fleets, ELD compliance still gets treated like a back-office chore. Then a roadside inspection, a log audit, or a simple device glitch turns it into a shutdown problem, a missed load, or a preventable fine....",
+    "date": "April 22, 2026",
+    "sort_date": "2026-04-22",
+    "category": "Compliance",
+    "author": "Michael Chen",
+    "read_time": "5 min read",
+    "image": "blog-posts/images/bp69-image.png"
+  },
+  {
+    "id": "bp68",
+    "title": "What fleets can learn from detention pay disputes driving driver turnover",
+    "excerpt": "Drivers rarely leave over one bad week of miles. More often, they leave when the paycheck stops feeling predictable, especially when detention, layover, and dispatch decisions make them wonder what they’ll actually be pa...",
+    "date": "April 22, 2026",
+    "sort_date": "2026-04-22",
+    "category": "Driver Recruiting",
+    "author": "Michael Chen",
+    "read_time": "6 min read",
+    "image": "blog-posts/images/bp68-image.png"
+  },
+  {
     "id": "bp67",
     "title": "ELD, ELD-Adjacent Data, and Smarter Fleet Compliance in 2026",
     "excerpt": "ELD, ELD-Adjacent Data, and Smarter Fleet Compliance in 2026 Electronic logging has made it easier to track hours-of-service activity, but ELD compliance in 2026 is no longer just about the log itself. Fleets are being j...",
