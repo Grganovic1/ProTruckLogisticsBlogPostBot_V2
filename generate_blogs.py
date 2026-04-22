@@ -104,6 +104,8 @@ FTP_HOST = env_value("FTP_HOST", "")
 FTP_USER = env_value("FTP_USER", "")
 FTP_PASS = env_value("FTP_PASS", "")
 FTP_BLOG_DIR = env_value("FTP_BLOG_DIR", "/blog-posts/")
+FTP_PORT = env_int("FTP_PORT", 21)
+FTP_USE_TLS = env_bool("FTP_USE_TLS", False)
 
 
 def derive_site_root_dir(blog_dir: str) -> str:
@@ -120,6 +122,7 @@ def derive_site_root_dir(blog_dir: str) -> str:
 
 FTP_SITE_ROOT_DIR = env_value("FTP_SITE_ROOT_DIR", derive_site_root_dir(FTP_BLOG_DIR))
 FTP_IS_SFTP = env_bool("FTP_IS_SFTP", False)
+SFTP_PORT = env_int("SFTP_PORT", 22)
 SFTP_STRICT_HOST_KEY = env_bool("SFTP_STRICT_HOST_KEY", False)
 SFTP_KNOWN_HOSTS = env_value("SFTP_KNOWN_HOSTS", "")
 
@@ -1278,8 +1281,14 @@ def upload_files_via_sftp(blog_files: list[Path], image_files: list[Path], root_
             log("Warning: SFTP strict host key checking disabled (set SFTP_STRICT_HOST_KEY=true to enforce)")
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-        log(f"Connecting to SFTP host {FTP_HOST}...")
-        ssh.connect(hostname=FTP_HOST, username=FTP_USER, password=FTP_PASS, timeout=20)
+        log(f"Connecting to SFTP host {FTP_HOST}:{SFTP_PORT}...")
+        ssh.connect(
+            hostname=FTP_HOST,
+            port=SFTP_PORT,
+            username=FTP_USER,
+            password=FTP_PASS,
+            timeout=20,
+        )
         sftp = ssh.open_sftp()
 
         ensure_remote_dir_sftp(sftp, FTP_BLOG_DIR)
@@ -1333,9 +1342,15 @@ def ensure_remote_dir_ftp(ftp: ftplib.FTP, path: str) -> None:
 
 def upload_files_via_ftp(blog_files: list[Path], image_files: list[Path], root_files: list[Path]) -> bool:
     try:
-        log(f"Connecting to FTP host {FTP_HOST}...")
-        with ftplib.FTP(FTP_HOST, FTP_USER, FTP_PASS) as ftp:
+        ftp_class = ftplib.FTP_TLS if FTP_USE_TLS else ftplib.FTP
+        protocol = "FTPS" if FTP_USE_TLS else "FTP"
+        log(f"Connecting to {protocol} host {FTP_HOST}:{FTP_PORT}...")
+        with ftp_class() as ftp:
+            ftp.connect(FTP_HOST, FTP_PORT, timeout=20)
+            ftp.login(FTP_USER, FTP_PASS)
             ftp.encoding = "utf-8"
+            if FTP_USE_TLS:
+                ftp.prot_p()
             ensure_remote_dir_ftp(ftp, FTP_BLOG_DIR)
             ensure_remote_dir_ftp(ftp, f"{FTP_BLOG_DIR.rstrip('/')}/images")
             ensure_remote_dir_ftp(ftp, FTP_SITE_ROOT_DIR)
@@ -1359,10 +1374,11 @@ def upload_files_via_ftp(blog_files: list[Path], image_files: list[Path], root_f
                     ftp.storbinary(f"STOR {root_path.name}", fp)
                 log(f"Uploaded root file {root_path.name}")
 
-        log("FTP upload completed")
+        log(f"{protocol} upload completed")
         return True
     except Exception as exc:
-        log(f"FTP upload failed: {exc}")
+        protocol = "FTPS" if FTP_USE_TLS else "FTP"
+        log(f"{protocol} upload failed: {exc}")
         return False
 
 

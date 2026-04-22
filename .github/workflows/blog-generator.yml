@@ -42,12 +42,15 @@ jobs:
           BLOG_INCLUDES_HREF: ${{ vars.BLOG_INCLUDES_HREF || '../includes.html' }}
           SKIP_UPLOAD: ${{ vars.SKIP_UPLOAD }}
 
-          FTP_HOST: ${{ secrets.FTP_HOST }}
+          FTP_HOST: ${{ vars.FTP_HOST_OVERRIDE || secrets.FTP_HOST }}
           FTP_USER: ${{ secrets.FTP_USER }}
           FTP_PASS: ${{ secrets.FTP_PASS }}
           FTP_IS_SFTP: ${{ vars.FTP_IS_SFTP || 'false' }}
+          FTP_PORT: ${{ vars.FTP_PORT }}
+          FTP_USE_TLS: ${{ vars.FTP_USE_TLS }}
           FTP_BLOG_DIR: ${{ vars.FTP_BLOG_DIR || '/blog-posts/' }}
           FTP_SITE_ROOT_DIR: ${{ vars.FTP_SITE_ROOT_DIR }}
+          SFTP_PORT: ${{ vars.SFTP_PORT }}
           SFTP_STRICT_HOST_KEY: ${{ vars.SFTP_STRICT_HOST_KEY }}
           SFTP_KNOWN_HOSTS: ${{ vars.SFTP_KNOWN_HOSTS }}
         run: python generate_blogs.py
