@@ -1,0 +1,69 @@
+{
+  "id": "bp71",
+  "title": "How Fuel Costs Keep Squeezing Owner-Operators Even With Surcharges in Place",
+  "source_title": "Fuel Surcharges Are Not Saving You: Why Fleets Still Feel the Pain at the Pump",
+  "title_candidates": [
+    "The Hidden Cost of Fuel Volatility: Why Carriers Still Can’t Catch a Break",
+    "How Fuel Costs Keep Squeezing Owner-Operators Even With Surcharges in Place",
+    "What Fleets Can Learn From the Fuel Surcharge Gap That Keeps Eating Profit",
+    "Fuel Surcharges Are Missing the Mark: Why Fleets Still Feel the Pump Pain",
+    "Trucking’s Fuel Problem Isn’t Going Away: What Fleets Need to Watch Now"
+  ],
+  "excerpt": "Fuel is still one of the fastest ways to erase profit in trucking. Even with fuel programs, trucker surcharges, and “pass-through” adjustments in place, many owner-operators and small fleets are finding that rising diese...",
+  "date": "April 23, 2026",
+  "sort_date": "2026-04-23",
+  "category": "Fuel",
+  "audience": "Owner-operators, fleet owners, finance teams",
+  "angle": "margin squeeze and cost-control warning",
+  "urgency": "medium",
+  "legal_sensitivity": "low",
+  "author": "Michael Chen",
+  "author_position": "Technology Director",
+  "author_bio": "Michael specializes in logistics technology integration, helping companies leverage AI, IoT, and analytics to optimize supply chains.",
+  "author_image": "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3",
+  "read_time": "5 min read",
+  "content": "<p>Fuel is still one of the fastest ways to erase profit in trucking. Even with fuel programs, trucker surcharges, and “pass-through” adjustments in place, many owner-operators and small fleets are finding that rising diesel prices keep leaking money out of the run. The problem is simple: fuel costs for owner-operators do not stop at the pump, and the fuel surcharge impact is often weaker than it looks on paper.</p>\n<p>That’s why the real question is not whether a surcharge exists. It’s whether it actually covers the full hit to trucking fuel expenses after routing, deadhead, idle time, and slower customer payment cycles are added in. Too often, it does not.</p>\n<h2>Fuel Surcharges Help, but They Rarely Cover the Whole Damage</h2>\n<p>Most carriers and shippers understand that fuel moves. That’s why surcharges exist. They are meant to offset part of the cost when diesel prices climb. In theory, this keeps freight operating costs from spiking too hard for the people hauling the load.</p>\n<p>In practice, though, a surcharge is only one piece of the margin puzzle. It usually helps most on linehaul miles that are directly tied to the load. It does less for the miles that happen around the load: getting to the pickup, detouring around a weak route, waiting for a better rate, or repositioning after a delivery.</p>\n<p>That matters because owner-operator profit margins are built on the whole trip, not just the paid load miles. If fuel costs rise while deadhead stays high, the surcharge can look good on the settlement and still leave the truck in the red.</p>\n<h2>What Most People Miss: Fuel Burn Happens Off the Main Route Too</h2>\n<p>This is where many operators get squeezed without noticing it right away. They focus on the posted surcharge rate, but the hidden fuel bill shows up in operational decisions.</p>\n<p>Here’s the part most people miss:</p>\n<ul>\n<li><strong>Deadhead miles</strong> are usually not fully protected by surcharges.</li>\n<li><strong>Routing changes</strong> can add fuel burn without adding revenue.</li>\n<li><strong>Idle time and detention</strong> waste fuel while the truck is not moving freight.</li>\n<li><strong>Out-of-network fuel stops</strong> can erase the benefit of any card or program discount.</li>\n<li><strong>Empty repositioning</strong> after delivery can turn a decent load into a weak one.</li>\n</ul>\n<p>So while the surcharge may be doing its job on paper, the rest of the trip may still be dragging down the math. That is why fuel surcharge impact can be overstated if you only look at the invoice and not the full lane performance.</p>\n<h2>A Quick Scenario: When the Load Looks Good but the Margin Doesn’t</h2>\n<p>Say an owner-operator takes a load that pays well enough to look solid after the trucker surcharge is added. The linehaul rate and fuel adjustment cover most of the direct haul. But the shipper appointment changes, the driver loses time at pickup, and the truck ends up taking a longer route to avoid congestion and weather.</p>\n<p>Now the truck burns more diesel, spends more time on the road, and may need to deadhead farther than planned for the next load. The settlement still shows a fuel line item, but the real freight operating costs went up in three places at once:</p>\n<ol>\n<li>More fuel used on the road</li>\n<li>More unpaid miles between loads</li>\n<li>More time spent earning less on the next move</li>\n</ol>\n<p>That is how rising diesel prices keep squeezing operators even when a surcharge exists. The fuel program helped, but it did not erase the extra miles or the lost time.</p>\n<h2>How Fleet Operators Can Protect Margin Before Fuel Swallows It</h2>\n<p>There is no perfect fix for fuel volatility, but there is a better way to manage it. The goal is to make sure fuel costs for owner-operators are tracked where they actually show up, not just where the surcharge line appears.</p>\n<p>Use a simple discipline around every load:</p>\n<ul>\n<li><strong>Check total trip miles</strong>, not just paid miles.</li>\n<li><strong>Compare deadhead to paid miles</strong> before accepting the load.</li>\n<li><strong>Watch idle time and detention</strong> as part of fuel cost, not just a service issue.</li>\n<li><strong>Review the fuel program</strong> to make sure the discount is real at your actual stops.</li>\n<li><strong>Reprice weak lanes</strong> when diesel moves up and the surcharge does not fully keep pace.</li>\n<li><strong>Teach dispatch to route with fuel in mind</strong>, not only schedule pressure.</li>\n</ul>\n<p>For fleet owners and finance teams, that means looking beyond the settlement summary. For dispatchers, it means treating routing and deadhead as margin decisions. For drivers, it means understanding that a “good paying” load can still hurt if it eats too much fuel on the back end.</p>\n<p>If your operation is trying to tighten fuel control and protect margin, it helps to review the full freight picture, not just the surcharge line. You can also explore <a href=\"../services.html\">Pro Truck Logistics services</a> or <a href=\"../carriers.html\">carrier support options</a> if you want to compare ways to reduce cost pressure across the network.</p>\n<p><strong>Bottom line:</strong> trucker surcharges can soften the blow, but they rarely eliminate it. The real defense against trucking fuel expenses is tighter trip planning, smarter routing, and honest lane-by-lane margin checks. If diesel is climbing, don’t assume the surcharge has you covered. Rework the load math before the load reworks your profit.</p>",
+  "image": "images/bp71-image.png",
+  "image_source": "openai-image",
+  "internal_links": [
+    {
+      "href": "../carriers.html",
+      "label": "carrier support options",
+      "keywords": [
+        "carrier",
+        "carriers",
+        "owner-operator",
+        "owner operators",
+        "drivers",
+        "capacity"
+      ]
+    },
+    {
+      "href": "../services.html",
+      "label": "Pro Truck Logistics services",
+      "keywords": [
+        "dispatch",
+        "dispatchers",
+        "logistics",
+        "shipping",
+        "freight",
+        "operations",
+        "fleet"
+      ]
+    }
+  ],
+  "social_teasers": {
+    "bluesky": [
+      "Fuel surcharges help—but they don’t erase margin pressure. When diesel swings, deadhead, routing, and customer pricing can still squeeze owner-operators hard. See what’s really driving the cost squeeze.",
+      "Fuel is still one of trucking’s biggest profit leaks. Even with surcharges in place, volatility can eat into margin fast for smaller fleets. Learn why cost control matters more than ever."
+    ],
+    "mastodon": [
+      "Fuel surcharges aren’t a fix-all. Diesel volatility can still squeeze owner-operators through deadhead, routing, and pricing lag. See why fuel remains a margin pressure point.",
+      "Even with fuel programs in place, trucking profits can get squeezed fast. For small fleets, fuel cost swings ripple into every mile. Learn how the pressure builds."
+    ]
+  },
+  "meta": {
+    "description": "Fuel costs are still squeezing owner-operators despite surcharges. See what fleet operators, dispatchers, and logistics managers need to know.",
+    "keywords": "fuel costs for owner-operators, fuel surcharge impact, trucking fuel expenses, owner-operator profit margins, rising diesel prices, freight operating costs, trucker surcharges"
+  }
+}
