@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title id="post-title">When Dispatch Becomes a Profit Leak: What Carriers Are Losing Behind the Scenes | Pro Truck Logistics</title>
+<link href="https://protrucklogistics.org/blog-posts/post-bp72.html" rel="canonical"/>
+<!-- Meta tags for SEO -->
+<meta content="Discover hidden dispatch profit leaks and learn how fleet operators, dispatchers, and logistics managers can protect margins and boost efficiency." name="description"/>
+<meta content="dispatch profit leak, carrier operational losses, dispatch inefficiency, trucking profit margins, carrier back-office costs, freight dispatch management, hidden trucking expenses" name="keywords"/>
+<!-- Open Graph / Social Media Meta Tags -->
+<meta content="When Dispatch Becomes a Profit Leak: What Carriers Are Losing Behind the Scenes | Pro Truck Logistics" property="og:title"/>
+<meta content="Discover hidden dispatch profit leaks and learn how fleet operators, dispatchers, and logistics managers can protect margins and boost efficiency." property="og:description"/>
+<meta content="https://protrucklogistics.org/blog-posts/images/bp72-image.png" property="og:image"/>
+<meta content="https://protrucklogistics.org/blog-posts/post-bp72.html" property="og:url"/>
+<meta content="article" property="og:type"/>
+<!-- Bootstrap CSS from CDN -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+<!-- Font Awesome for icons -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<style>
+    /* Custom styling */
+    :root {
+      --primary: #1a3c6e;     /* Dark blue */
+      --secondary: #e84c3d;   /* Red */
+      --light: #f8f9fa;
+      --dark: #212529;
+    }
+    
+    body {
+      font-family: 'Montserrat', sans-serif;
+    }
+    
+    /* Navigation */
+    .navbar {
+      padding: 15px 0;
+      background-color: var(--primary);
+      height: 150px; /* Increased height to accommodate bigger logo */
+    }
+
+    .navbar-brand {
+      padding: 0;
+      margin: 0;
+    }
+    
+    .navbar-brand img {
+      height: 200px; /* Much larger logo */
+      width: auto;
+      filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2)); /* Add shadow to make it pop */
+    }
+    
+    .navbar .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 100%;
+    }
+    
+    #navbarNav {
+      justify-content: flex-end;
+    }
+    
+    .nav-link {
+      color: white !important;
+      font-weight: 500;
+      margin-left: 15px;
+      transition: color 0.3s;
+    }
+    
+    .nav-link:hover, .nav-link.active {
+      color: var(--secondary) !important;
+    }
+    
+    /* Buttons */
+    .btn-primary {
+      background-color: var(--secondary);
+      border-color: var(--secondary);
+      padding: 10px 20px;
+      font-weight: 600;
+    }
+    
+    .btn-primary:hover {
+      background-color: #c83b2d;
+      border-color: #c83b2d;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    
+    /* Page Header */
+    .page-header {
+      background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('');
+      background-size: cover;
+      background-position: center;
+      color: white;
+      padding: 120px 0 60px;
+      margin-bottom: 40px;
+    }
+    
+    .header-container {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    
+    .post-category {
+      display: inline-block;
+      background-color: var(--secondary);
+      color: white;
+      font-size: 0.9rem;
+      padding: 5px 15px;
+      border-radius: 20px;
+      margin-bottom: 15px;
+    }
+    
+    .post-title {
+      font-size: 2.8rem;
+      font-weight: 700;
+      margin-bottom: 15px;
+      text-shadow: 2px 2px 5px rgba(0,0,0,0.6);
+    }
+    
+    .post-meta {
+      font-size: 1.1rem;
+      margin-bottom: 0;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
+    }
+    
+    .post-meta span {
+      margin: 0 10px;
+    }
+    
+    /* Blog content styles */
+    .blog-content {
+      padding: 0 0 60px;
+    }
+    
+    .content-wrapper {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .blog-content p {
+      margin-bottom: 1.5rem;
+      line-height: 1.8;
+      font-size: 1.1rem;
+    }
+    
+    .blog-content h2 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin: 2rem 0 1rem;
+    }
+    
+    .blog-content h3 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--primary);
+      margin: 1.5rem 0 1rem;
+    }
+    
+    .blog-content ul, .blog-content ol {
+      margin-bottom: 1.5rem;
+      padding-left: 1.5rem;
+    }
+    
+    .blog-content li {
+      margin-bottom: 0.5rem;
+      line-height: 1.8;
+    }
+    
+    .blog-content a {
+      color: var(--secondary);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+    
+    .blog-content a:hover {
+      text-decoration: underline;
+    }
+    
+    .blog-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      margin: 2rem 0;
+    }
+    
+    .blog-content blockquote {
+      border-left: 4px solid var(--secondary);
+      padding-left: 1.5rem;
+      font-style: italic;
+      color: #666;
+      margin: 2rem 0;
+    }
+    
+    /* Author section */
+    .author-section {
+      background-color: var(--light);
+      padding: 30px;
+      border-radius: 10px;
+      margin-top: 30px;
+    }
+    
+    .author-image {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      overflow: hidden;
+      margin-right: 20px;
+    }
+    
+    .author-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .author-name {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 5px;
+      color: var(--primary);
+    }
+    
+    .author-position {
+      font-size: 1rem;
+      color: var(--secondary);
+      margin-bottom: 10px;
+    }
+    
+    /* Share buttons */
+    .share-section {
+      margin: 40px 0;
+      text-align: center;
+    }
+    
+    .share-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+    
+    .share-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+    
+    .share-button {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 20px;
+      border-radius: 50px;
+      color: white;
+      text-decoration: none;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    
+    .share-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .share-button i {
+      margin-right: 8px;
+    }
+    
+    .facebook {
+      background-color: #3b5998;
+    }
+    
+    .twitter {
+      background-color: #1da1f2;
+    }
+    
+    .linkedin {
+      background-color: #0077b5;
+    }
+    
+    .email {
+      background-color: #777;
+    }
+    
+    /* Related posts */
+    .related-posts {
+      padding: 60px 0;
+      background-color: var(--light);
+    }
+    
+    .section-title {
+      font-size: 2rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 40px;
+      color: var(--primary);
+    }
+    
+    .related-card {
+      background-color: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+      height: 100%;
+      transition: transform 0.3s;
+    }
+    
+    .related-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    }
+    
+    .related-image {
+      height: 180px;
+      background-size: cover;
+      background-position: center;
+    }
+    
+    .related-content {
+      padding: 20px;
+    }
+    
+    .related-category {
+      display: inline-block;
+      background-color: var(--primary);
+      color: white;
+      font-size: 0.8rem;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+    }
+    
+    .related-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: var(--primary);
+    }
+    
+    /* Newsletter section */
+    .newsletter-section {
+      background-color: var(--primary);
+      padding: 50px 0;
+      color: white;
+    }
+    
+    /* Footer */
+    footer {
+      background-color: var(--primary);
+      color: white;
+      padding: 60px 0 20px;
+    }
+    
+    .footer-logo {
+      height: 80px;
+      margin-bottom: 20px;
+      background-color: white;
+      padding: 10px;
+      border-radius: 5px;
+    }
+    
+    .footer-heading {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+    
+    .footer-link {
+      color: #ccc;
+      text-decoration: none;
+      display: block;
+      margin-bottom: 10px;
+      transition: color 0.3s;
+    }
+    
+    .footer-link:hover {
+      color: white;
+    }
+    
+    .social-icon {
+      color: white;
+      font-size: 1.5rem;
+      margin-right: 1rem;
+      transition: color 0.3s;
+    }
+    
+    .social-icon:hover {
+      color: var(--secondary);
+    }
+    
+    /* Mobile responsive adjustments */
+    @media (max-width: 991px) {
+      .navbar {
+        height: auto;
+        padding: 15px 0;
+      }
+      
+      .navbar-brand img {
+        height: 100px; /* Still large but better for mobile */
+      }
+      
+      .container {
+        max-width: 100%; /* Full width on mobile */
+        padding-left: 15px;
+        padding-right: 15px;
+      }
+      
+      .post-title {
+        font-size: 2rem;
+      }
+      
+      .content-wrapper {
+        padding: 0 15px;
+      }
+    }
+  </style>
+<!-- Schema.org markup for Article -->
+<script id="article-schema" type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "When Dispatch Becomes a Profit Leak: What Carriers Are Losing Behind the Scenes",
+  "description": "Discover hidden dispatch profit leaks and learn how fleet operators, dispatchers, and logistics managers can protect margins and boost efficiency.",
+  "image": "https://protrucklogistics.org/blog-posts/images/bp72-image.png",
+  "author": {
+    "@type": "Person",
+    "name": "John Smith",
+    "jobTitle": "Logistics Specialist"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Pro Truck Logistics",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://protrucklogistics.org/ProTruckLogisticsFiles/logo.jpg"
+    }
+  },
+  "datePublished": "2026-04-25T00:00:00Z",
+  "dateModified": "2026-04-25T00:00:00Z",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://protrucklogistics.org/blog-posts/post-bp72.html"
+  },
+  "keywords": "dispatch profit leak, carrier operational losses, dispatch inefficiency, trucking profit margins, carrier back-office costs, freight dispatch management, hidden trucking expenses",
+  "articleSection": "Operations"
+}
+</script>
+<script>
+      // Load favicon and shared meta tags
+      fetch('../includes.html')
+        .then(response => response.text())
+        .then(data => {
+          const headElement = document.head;
+          const tempElement = document.createElement('div');
+          tempElement.innerHTML = data;
+          
+          // Add common elements
+          while (tempElement.firstChild) {
+            headElement.insertBefore(tempElement.firstChild, document.querySelector('style'));
+          }
+          
+          // Add page-specific meta tags based on the current page content
+          // These will be dynamically generated for each blog post
+          const pageTitle = document.title;
+          const pageDesc = document.querySelector('meta[name="description"]')?.getAttribute('content') || 
+                          "Logistics and transportation industry insights from Pro Truck Logistics";
+          
+          const metaTags = `
+            <meta property="og:title" content="${pageTitle}">
+            <meta property="og:description" content="${pageDesc}">
+            <meta property="og:type" content="article">
+          `;
+          
+          tempElement.innerHTML = metaTags;
+          while (tempElement.firstChild) {
+            headElement.insertBefore(tempElement.firstChild, document.querySelector('style'));
+          }
+        })
+        .catch(error => console.error('Error loading includes:', error));
+    </script>
+</head>
+<body>
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+<div class="container">
+<a class="navbar-brand" href="../index.html">
+<img alt="Pro Truck Logistics Logo" src="../ProTruckLogisticsFiles/logo.jpg"/>
+</a>
+<button aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-bs-target="#navbarNav" data-bs-toggle="collapse" type="button">
+<span class="navbar-toggler-icon"></span>
+</button>
+<div class="collapse navbar-collapse" id="navbarNav">
+<ul class="navbar-nav ms-auto">
+<li class="nav-item">
+<a class="nav-link" href="../index.html">Home</a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="../services.html">Services</a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="../about.html">About Us</a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="../blog.html">Blog</a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="../careers.html">Careers</a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="../agents.html">Agents</a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="../contact.html">Contact</a>
+</li>
+<li class="nav-item ms-lg-3">
+<a class="btn btn-primary" href="../careers.html">Drive With Us</a>
+</li>
+</ul>
+</div>
+</div>
+</nav>
+<!-- Page Header with Featured Image -->
+<header class="page-header" id="post-header" style="background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('images/bp72-image.png');">
+<div class="header-container">
+<span class="post-category" id="post-category">Operations</span>
+<h1 class="post-title" id="post-title-header">When Dispatch Becomes a Profit Leak: What Carriers Are Losing Behind the Scenes</h1>
+<p class="post-meta">
+<span><i class="far fa-calendar-alt"></i> <span id="post-date">April 25, 2026</span></span>
+<span><i class="far fa-user"></i> <span id="post-author">John Smith</span></span>
+<span><i class="far fa-clock"></i> <span id="post-read-time">6 min read</span></span>
+</p>
+</div>
+</header>
+<!-- Blog Content -->
+<section class="blog-content">
+<div class="container">
+<div class="content-wrapper">
+<!-- Blog post content -->
+<div id="post-content"><h2>When Dispatch Becomes a Profit Leak: What Carriers Are Losing Behind the Scenes</h2>
+<p>Dispatch is supposed to move freight, keep trucks turning, and protect margins. But when it’s sloppy, rushed, or disconnected from what’s happening on the road, it quietly turns into a <strong>dispatch profit leak</strong>. The money doesn’t disappear all at once — it slips out through detention, fuel waste, missed appointments, driver churn, and a growing stack of <strong>carrier operational losses</strong>.</p>
+<p>That matters more now because many fleets are running leaner than they used to. With fewer drivers and tighter coverage, every bad decision is more expensive, and every delay is harder to absorb. In other words: dispatch is either helping your <strong>trucking profit margins</strong> or draining them in the background.</p>
+<h2>How Bad Dispatch Eats Margin, Load by Load</h2>
+<p>Most people think of dispatch as scheduling. In reality, it’s a chain of decisions that affects the entire move. If one link is weak, the costs show up fast.</p>
+<p>Here’s where <strong>dispatch inefficiency</strong> usually shows up:</p>
+<ul>
+<li><strong>Detention and waiting time:</strong> Poor appointment timing, bad check-in planning, or weak follow-up can leave drivers sitting unpaid or underpaid while the clock keeps moving.</li>
+<li><strong>Missed appointments:</strong> A late pickup or sloppy handoff can knock the rest of the day off track, forcing reschedules, apologizing to brokers, and burning goodwill.</li>
+<li><strong>Fuel waste:</strong> A dispatch plan that ignores routing, traffic patterns, deadhead, or facility access can add unnecessary miles and idle time.</li>
+<li><strong>Driver frustration:</strong> Drivers remember when they’re set up to fail. Repeated chaos leads to turnover, lower morale, and more time spent recruiting and retraining.</li>
+<li><strong>Back-office drag:</strong> Every exception creates more work for accounting, customer service, and operations, adding to <strong>carrier back-office costs</strong> that rarely get tied back to the original mistake.</li>
+</ul>
+<p>None of those line items looks dramatic by itself. Together, they create a steady bleed in <strong>hidden trucking expenses</strong>.</p>
+<h2>What Most People Miss: The Real Cost Is Often Delayed</h2>
+<p>The obvious costs are easy to spot. The missed appointment fee. The detention dispute. The fuel receipt that looks too high. But the bigger problem is what happens after the original error.</p>
+<p>A bad dispatch decision often triggers a chain reaction:</p>
+<ol>
+<li>The driver waits longer than expected.</li>
+<li>The next load gets pushed back or lost.</li>
+<li>The dispatcher rushes the next assignment to recover time.</li>
+<li>The driver gets another bad day.</li>
+<li>The operation spends more time fixing problems than preventing them.</li>
+</ol>
+<p>That’s the part many fleets miss. They see the first cost, but not the second- and third-order damage. Over time, that creates a pattern of reactive freight dispatch management where the team is always cleaning up instead of planning ahead.</p>
+<p>Here’s a simple real-world scenario: a truck is assigned to a morning pickup without a realistic buffer for yard congestion. The driver arrives on time, but the shipper isn’t ready. Two hours later, the truck finally gets loaded, and the remaining day becomes a scramble. One delay turns into a later delivery, extra fuel burn, a stressed driver, and a dispatcher who has to rebuild the day around a broken schedule. That is how a small error becomes a <strong>carrier operational loss</strong>.</p>
+<h2>Why Lean Fleets Feel Every Dispatch Mistake More</h2>
+<p>When a large fleet has slack in the system, one bad load can be absorbed. Smaller and mid-sized carriers usually don’t have that cushion. If one truck is delayed, there may not be another available to cover the gap. If one driver quits, the ripple effect is immediate.</p>
+<p>That’s why dispatch quality matters so much in a tight labor market. Fleets under pressure to do more with fewer drivers can’t afford the old habit of “we’ll figure it out later.” Later is where the margin gets lost.</p>
+<p>Good dispatch work isn’t just about assigning freight. It’s about:</p>
+<ul>
+<li>matching the right load to the right truck at the right time</li>
+<li>factoring in detention risk before the truck is sent</li>
+<li>building realistic travel and appointment windows</li>
+<li>communicating clearly with drivers and customers</li>
+<li>tracking where time and money are actually being lost</li>
+</ul>
+<p>If those basics aren’t being managed well, the operation is paying for the mistake again and again.</p>
+<h2>Turning Dispatch Into a Profit Center, Not a Leak</h2>
+<p>The fix isn’t complicated, but it does require discipline. Start by treating dispatch like a performance function, not just a phone-answering role.</p>
+<p>Ask these questions on a regular basis:</p>
+<ul>
+<li>Which lanes or facilities create the most detention?</li>
+<li>How often are appointments missed because of avoidable timing issues?</li>
+<li>How much deadhead is created by last-minute rework?</li>
+<li>Which drivers are consistently getting the worst assignments?</li>
+<li>Where are we losing time to avoidable communication breakdowns?</li>
+</ul>
+<p>Then tighten the process. Build better appointment planning. Confirm shipper and receiver expectations before the truck rolls. Give dispatchers enough visibility to plan around real-world constraints, not just posted times. And make sure the driver is part of the information loop, not the last person to hear about a change.</p>
+<p>If your team needs support building a cleaner operation, take a look at <a href="../services.html">Pro Truck Logistics services</a> or explore <a href="../carriers.html">carrier support options</a> that can help reduce the day-to-day friction that drains margin.</p>
+<h2>Conclusion: Stop Paying for Bad Dispatch Twice</h2>
+<p>Dispatch mistakes are expensive because they rarely stay isolated. They create detention, missed loads, wasted fuel, frustrated drivers, and more back-office cleanup than most fleets want to admit. That’s why dispatch can be either a profit center or a profit leak depending on how seriously it’s managed.</p>
+<p>The next step is straightforward: audit where your time, fuel, and driver satisfaction are getting lost, then tighten the process before the same problems repeat next week. In this market, the carriers that win won’t just move freight faster — they’ll run dispatch well enough to protect every dollar they earn.</p></div>
+<!-- Author section -->
+<div class="author-section d-flex align-items-start">
+<div class="author-image">
+<img alt="John Smith" id="author-image" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3"/>
+</div>
+<div>
+<h4 class="author-name" id="author-name">John Smith</h4>
+<p class="author-position" id="author-position">Logistics Specialist</p>
+<p id="author-bio">John has over 15 years of experience in the logistics industry, specializing in supply chain optimization and transportation management.</p>
+</div>
+</div>
+<!-- Share section -->
+<div class="share-section">
+<h5 class="share-title">Share This Post</h5>
+<div class="share-buttons">
+<a class="share-button facebook" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fprotrucklogistics.org%2Fblog-posts%2Fpost-bp72.html" rel="noopener noreferrer" target="_blank"><i class="fab fa-facebook-f"></i> Facebook</a>
+<a class="share-button twitter" href="https://twitter.com/intent/tweet?url=https%3A%2F%2Fprotrucklogistics.org%2Fblog-posts%2Fpost-bp72.html&amp;text=When%20Dispatch%20Becomes%20a%20Profit%20Leak%3A%20What%20Carriers%20Are%20Losing%20Behind%20the%20Scenes" rel="noopener noreferrer" target="_blank"><i class="fab fa-twitter"></i> Twitter</a>
+<a class="share-button linkedin" href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3A%2F%2Fprotrucklogistics.org%2Fblog-posts%2Fpost-bp72.html&amp;title=When%20Dispatch%20Becomes%20a%20Profit%20Leak%3A%20What%20Carriers%20Are%20Losing%20Behind%20the%20Scenes" rel="noopener noreferrer" target="_blank"><i class="fab fa-linkedin-in"></i> LinkedIn</a>
+<a class="share-button email" href="mailto:?subject=When%20Dispatch%20Becomes%20a%20Profit%20Leak%3A%20What%20Carriers%20Are%20Losing%20Behind%20the%20Scenes&amp;body=Check%20out%20this%20article%3A%20https%3A%2F%2Fprotrucklogistics.org%2Fblog-posts%2Fpost-bp72.html"><i class="fas fa-envelope"></i> Email</a>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Related Posts Section -->
+<section class="related-posts">
+<div class="container">
+<h2 class="section-title">Related Posts</h2>
+<div class="row" id="related-posts-container"><div class="col-md-4 mb-4"><article class="related-card"><a class="text-decoration-none" href="post-bp71.html"><div class="related-image" style="background-image: url('images/bp71-image.png');"></div><div class="related-content"><span class="related-category">Fuel</span><h3 class="related-title">How Fuel Costs Keep Squeezing Owner-Operators Even With Surcharges in Place</h3><p>Fuel is still one of the fastest ways to erase profit in trucking. Even with fuel programs, trucker surcharges, and “pass-through” adjustments in place, many owner-operat...</p><span class="btn btn-link p-0">Read more</span></div></a></article></div><div class="col-md-4 mb-4"><article class="related-card"><a class="text-decoration-none" href="post-bp65.html"><div class="related-image" style="background-image: url('images/bp65-image.png');"></div><div class="related-content"><span class="related-category">Logistics Technology</span><h3 class="related-title">How Dispatch Technology Is Changing Load Planning for Trucking Fleets</h3><p>How Dispatch Technology Is Changing Load Planning for Trucking Fleets **Category:** Logistics Technology **Date:** April 22, 2026 Load planning has always been one of the...</p><span class="btn btn-link p-0">Read more</span></div></a></article></div><div class="col-md-4 mb-4"><article class="related-card"><a class="text-decoration-none" href="post-bp70.html"><div class="related-image" style="background-image: url('images/bp70-image.png');"></div><div class="related-content"><span class="related-category">Safety Technology</span><h3 class="related-title">The Safety Tech Gap: Why Drivers Don’t Trust Tools That Look Good on Paper</h3><p>The Safety Tech Gap: Why Drivers Don’t Trust Tools That Look Good on Paper Safety tech is supposed to make the road safer, not start a fight in the shop. But in many flee...</p><span class="btn btn-link p-0">Read more</span></div></a></article></div></div>
+</div>
+</section>
+<!-- Newsletter Section -->
+<section class="newsletter-section">
+<div class="container text-center">
+<h3 class="mb-4">Subscribe to Our Newsletter</h3>
+<p class="mb-4">Stay updated with the latest industry trends, tips, and insights delivered to your inbox.</p>
+<div class="row justify-content-center">
+<div class="col-md-6">
+<div class="input-group mb-3">
+<input aria-label="Email address" class="form-control" placeholder="Enter your email address" type="email"/>
+<button class="btn btn-primary" type="button">Subscribe</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer>
+<div class="container">
+<div class="row">
+<div class="col-lg-4 mb-4 mb-lg-0">
+<img alt="Pro Truck Logistics Logo" class="footer-logo" src="../ProTruckLogisticsFiles/logo.jpg"/>
+<p>Your reliable partner in logistics and transportation services.</p>
+<div class="mt-3">
+<a class="social-icon" href="#"><i class="fab fa-facebook"></i></a>
+<a class="social-icon" href="#"><i class="fab fa-instagram"></i></a>
+<a class="social-icon" href="#"><i class="fab fa-linkedin"></i></a>
+</div>
+</div>
+<div class="col-md-4 col-lg-2 mb-4 mb-md-0">
+<h5 class="footer-heading">Quick Links</h5>
+<a class="footer-link" href="../index.html">Home</a>
+<a class="footer-link" href="../services.html">Services</a>
+<a class="footer-link" href="../about.html">About Us</a>
+<a class="footer-link" href="../contact.html">Contact</a>
+</div>
+<div class="col-md-4 col-lg-2 mb-4 mb-md-0">
+<h5 class="footer-heading">Services</h5>
+<a class="footer-link" href="../services.html">Customers</a>
+<a class="footer-link" href="../careers.html">Employment</a>
+<a class="footer-link" href="../carriers.html">Carriers</a>
+<a class="footer-link" href="../careers.html">Drivers</a>
+</div>
+<div class="col-lg-4">
+<h5 class="footer-heading">Contact Info</h5>
+<address>
+<p><i class="fas fa-map-marker-alt me-2"></i> Lawrenceville, GA</p>
+<p><i class="fas fa-phone me-2"></i> <a class="footer-link" href="tel:4044688268">404-468-8268</a></p>
+<p><i class="fas fa-envelope me-2"></i> <a class="footer-link" href="mailto:info@protrucklogistics.org">info@protrucklogistics.org</a></p>
+</address>
+</div>
+</div>
+<hr class="mt-4 mb-3" style="border-color: rgba(255,255,255,0.1);"/>
+<div class="row">
+<div class="col-md-6 text-center text-md-start">
+<p class="mb-0">© 2025 Pro Truck Logistics. All rights reserved.</p>
+</div>
+<div class="col-md-6 text-center text-md-end">
+<a class="text-white text-decoration-none me-3" href="../privacy.html">Privacy Policy</a>
+<a class="text-white text-decoration-none" href="../terms.html">Terms of Service</a>
+</div>
+</div>
+</div>
+</footer>
+<!-- Bootstrap JS bundle with Popper from CDN -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
